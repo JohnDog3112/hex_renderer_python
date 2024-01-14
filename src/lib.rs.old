@@ -1,0 +1,357 @@
+use hex_renderer::{options, pattern_utils, grids::{HexGrid, GridDraw}};
+use pyo3::{prelude::*, types::PyDict, exceptions::PyValueError};
+use serde::{Serialize, Deserialize};
+use serde_pyobject::from_pyobject;
+
+/// Formats the sum of two numbers as string.
+#[pyfunction]
+fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
+    Ok((a + b).to_string())
+}
+
+/// A Python module implemented in Rust.
+#[pymodule]
+fn hex_renderer_python(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_hex_grid, m)?)?;
+    m.add_class::<ColorA>()?;
+    m.add_function(wrap_pyfunction!(print_color, m)?)?;
+    Ok(())
+}
+
+#[pyfunction]
+fn draw_hex_grid(options: &PyDict, patterns: &PyAny, max_width: usize, scale: f32, file_name: String) -> PyResult<()>{
+    
+    let options: GridOptions = from_pyobject(options).map_err(|a| a.0)?;
+    let options: options::GridOptions = options.try_into().map_err(PyValueError::new_err)?;
+
+    let patterns: PatternVariantArray = from_pyobject(patterns).map_err(|a| a.0)?;
+    
+    let patterns: Vec<hex_renderer::PatternVariant> = patterns.try_into().map_err(PyValueError::new_err)?;
+
+    let grid = HexGrid::new(patterns, max_width).map_err(|_| PyValueError::new_err("Failed to create grid!"))?;
+
+    grid.draw_grid_to_file(&file_name, scale, &options).map_err(|_| PyValueError::new_err("Failed to draw/save render!"))?;
+    Ok(())
+}
+
+#[pyclass]
+#[derive(Debug)]
+struct ColorA(u8, u8, u8, u8);
+
+#[pymethods]
+impl ColorA {
+    #[new]
+    fn new(r: u8, g: u8, b: u8, a: u8) -> ColorA {
+        ColorA(r,g,b,a)
+    }
+}
+
+#[pyfunction]
+fn print_color(a: &ColorA) {
+    println!("Did it! {:?}", a);
+}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Color(pub u8, pub u8, pub u8, pub u8);
+
+impl From<Color> for options::Color {
+    fn from(value: Color) -> Self {
+        Self(value.0, value.1, value.2, value.3)
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum Lines {
+    Monocolor {
+        color: Color,
+        bent: bool,
+    },
+    Gradient {
+        colors: Vec<Color>,
+        segments_per_color: usize,
+        bent: bool,
+    },
+    SegmentColors {
+        colors: Vec<Color>,
+        triangles: Triangle,
+        collisions: CollisionOption,
+    },
+}
+
+impl From<Lines> for options::Lines {
+    fn from(value: Lines) -> Self {
+        match value {
+            Lines::Monocolor { color, bent } => Self::Monocolor{
+                color: color.into(), 
+                bent
+            },
+            Lines::Gradient { colors, segments_per_color, bent } => Self::Gradient{
+                colors: colors.into_iter().map(options::Color::from).collect(), 
+                segments_per_color, 
+                bent
+            },
+            Lines::SegmentColors { colors, triangles, collisions } => Self::SegmentColors { 
+                colors: colors.into_iter().map(options::Color::from).collect(), 
+                triangles: triangles.into(), 
+                collisions: collisions.into(),
+            },
+        }
+    }
+}
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum Triangle {
+    None,
+    Match { radius: f32 },
+    BorderMatch { match_radius: f32, border: Marker },
+    BorderStartMatch { match_radius: f32, border: Marker },
+}
+
+impl From<Triangle> for options::Triangle {
+    fn from(value: Triangle) -> Self {
+        match value {
+            Triangle::None => Self::None,
+            Triangle::Match { radius } => Self::Match{radius},
+            Triangle::BorderMatch { match_radius, border } => Self::BorderMatch { 
+                match_radius, 
+                border: border.into()
+            },
+            Triangle::BorderStartMatch { match_radius, border } => Self::BorderStartMatch {
+                match_radius,
+                border: border.into(),
+            },
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum CollisionOption {
+    Dashes {
+        color: Color
+    },
+    MatchedDashes,
+    ParallelLines,
+    OverloadedParallel {
+        max_line: usize,
+        overload: OverloadOptions,
+    },
+}
+
+impl From<CollisionOption> for options::CollisionOption {
+    fn from(value: CollisionOption) -> Self {
+        match value {
+            CollisionOption::Dashes{color} => Self::Dashes(color.into()),
+            CollisionOption::MatchedDashes => Self::MatchedDashes,
+            CollisionOption::ParallelLines => Self::ParallelLines,
+            CollisionOption::OverloadedParallel { max_line, overload } => Self::OverloadedParallel {
+                max_line,
+                overload: overload.into()
+            },
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum OverloadOptions {
+    Dashes{ color: Color},
+    LabeledDashes { color: Color, label: Marker },
+    MatchedDashes,
+}
+
+impl From<OverloadOptions> for options::OverloadOptions {
+    fn from(value: OverloadOptions) -> Self {
+        match value {
+            OverloadOptions::Dashes{color} => Self::Dashes(color.into()),
+            OverloadOptions::LabeledDashes { color, label } => Self::LabeledDashes {
+                color: color.into(),
+                label: label.into()
+            },
+            OverloadOptions::MatchedDashes => Self::MatchedDashes,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum Point {
+    None,
+    Single{marker: Marker},
+    Double { inner: Marker, outer: Marker },
+}
+
+impl From<Point> for options::Point {
+    fn from(value: Point) -> Self {
+        match value {
+            Point::None => Self::None,
+            Point::Single{marker} => Self::Single(marker.into()),
+            Point::Double { inner, outer } => Self::Double {
+                inner: inner.into(),
+                outer: outer.into()
+            },
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Marker {
+    pub color: Color,
+    pub radius: f32,
+}
+
+impl From<Marker> for options::Marker {
+    fn from(value: Marker) -> Self {
+        Self {
+            color: value.color.into(),
+            radius: value.radius
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum EndPoint {
+    Point{ point: Point},
+    Match { radius: f32 },
+    BorderedMatch { match_radius: f32, border: Marker },
+}
+
+impl From<EndPoint> for options::EndPoint {
+    fn from(value: EndPoint) -> Self {
+        match value {
+            EndPoint::Point{point} => Self::Point(point.into()),
+            EndPoint::Match { radius } => Self::Match {radius},
+            EndPoint::BorderedMatch { match_radius, border } => Self::BorderedMatch {
+                match_radius,
+                border: border.into()
+            },
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum Intersections {
+    Nothing,
+    UniformPoints{point: Point},
+    EndsAndMiddle {
+        start: EndPoint,
+        end: EndPoint,
+        middle: Point,
+    },
+}
+
+impl From<Intersections> for options::Intersections {
+    fn from(value: Intersections) -> Self {
+        match value {
+            Intersections::Nothing => Self::Nothing,
+            Intersections::UniformPoints{point} => Self::UniformPoints(point.into()),
+            Intersections::EndsAndMiddle { start, end, middle } => Self::EndsAndMiddle {
+                start: start.into(),
+                end: end.into(),
+                middle: middle.into(),
+            },
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum GridPatternOptions {
+    Uniform{
+        intersections: Intersections, 
+        lines: Lines
+    },
+    Changing {
+        variations: Vec<(Intersections, Lines)>,
+        intros: Vec<String>,
+        retros: Vec<String>,
+    },
+}
+
+fn convert_angle_sigs(str: String) -> Result<Vec<pattern_utils::Angle>, String> {
+    str.chars().map(|ch| {
+        pattern_utils::Angle::try_from(ch).map_err(|_| format!("Invalid angle_sigs! {}", str))
+    }).collect()
+}
+fn convert_to_angle_list(inp: Vec<String>) -> Result<Vec<Vec<pattern_utils::Angle>>, String> {
+    inp.into_iter().map(convert_angle_sigs).collect()
+}
+impl TryFrom<GridPatternOptions> for options::GridPatternOptions {
+    type Error = String;
+
+    fn try_from(value: GridPatternOptions) -> Result<Self, Self::Error> {
+        Ok(match value {
+            GridPatternOptions::Uniform { intersections, lines } => Self::Uniform(
+                intersections.into(),
+                lines.into()
+            ),
+            GridPatternOptions::Changing { variations, intros, retros } => Self::Changing {
+                variations: variations.into_iter().map(|(a, b)| (a.into(), b.into())).collect(),
+                intros: convert_to_angle_list(intros)?,
+                retros: convert_to_angle_list(retros)?
+            },
+        })
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GridOptions {
+    pub line_thickness: f32,
+
+    pub pattern_options: GridPatternOptions,
+
+    pub center_dot: Point,
+}
+
+impl TryFrom<GridOptions> for options::GridOptions {
+    type Error = String;
+
+    fn try_from(value: GridOptions) -> Result<Self, Self::Error> {
+        Ok(Self {
+            line_thickness: value.line_thickness,
+            pattern_options: value.pattern_options.try_into()?,
+            center_dot: value.center_dot.into()
+        })
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PatternVariant {
+    direction: String,
+    angle_sigs: String,
+    great_spell: bool,
+}
+
+impl TryFrom<PatternVariant> for hex_renderer::PatternVariant {
+    type Error = String;
+
+    fn try_from(value: PatternVariant) -> Result<Self, Self::Error> {
+
+        let direction = pattern_utils::Direction::try_from(&value.direction[..]).map_err(|_| format!("Invalid Direction! {}", value.direction))?;
+        let angle_sigs = convert_angle_sigs(value.angle_sigs)?;
+        let pattern = hex_renderer::Pattern::new(direction, angle_sigs);
+
+        Ok(if value.great_spell {
+            Self::Monocolor(pattern)
+        } else {
+            Self::Normal(pattern)
+        })
+
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PatternVariantArray(pub Vec<PatternVariant>);
+
+impl TryFrom<PatternVariantArray> for Vec<hex_renderer::PatternVariant> {
+    type Error = String;
+
+    fn try_from(value: PatternVariantArray) -> Result<Self, Self::Error> {
+        value.0.into_iter().map(|item| {
+            item.try_into()
+        }).collect()
+    }
+}
