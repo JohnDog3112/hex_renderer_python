@@ -1,9 +1,11 @@
 use hex_renderer::pattern_utils::{Direction, Angle};
+use interface_macros::py_type_gen;
 use pyo3::{pyclass, pymethods, PyResult, exceptions::PyValueError};
 
 use crate::angles_to_string;
 
 #[derive(Debug, Clone)]
+#[py_type_gen]
 #[pyclass(name = "PatternVariant")]
 pub struct PyPatternVariant {
     dir_str: String,
@@ -12,6 +14,7 @@ pub struct PyPatternVariant {
     great_spell: bool,
 }
 
+#[py_type_gen]
 #[pymethods]
 impl PyPatternVariant {
     #[new]

@@ -16,6 +16,8 @@ pub mod collision_option;
 
 pub mod lines;
 
+pub mod angle_sig;
+
 pub mod grid_pattern_options;
 
 pub mod grid_options;

@@ -1,6 +1,7 @@
 use std::fs;
 
 use hex_renderer::{grids::{GridDraw, GridDrawError, SquareGrid, HexGrid}, PatternVariant};
+use interface_macros::{py_type_gen, PyType};
 use pyo3::{pyclass, PyErr, exceptions::PyValueError, FromPyObject, PyRef, pymethods, PyResult, types::PyModule};
 
 use super::{grid_options::PyGridOptions, pattern_variant::PyPatternVariant};
@@ -13,6 +14,7 @@ pub fn initialize_classes(m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
+#[py_type_gen]
 #[pyclass(name = "Grid", subclass)]
 struct PyGrid(Box<dyn GridDraw + Send>);
 
@@ -32,6 +34,17 @@ enum ScaleOption<'a> {
     Padding(f32),
     Options(PyRef<'a, PyGridOptions>),
 }
+
+impl<'a> PyType for ScaleOption<'a> {
+    fn to_string() -> String {
+        format!(
+            "{} | {}", 
+            <f32 as PyType>::to_string(),
+            <PyRef<'a, PyGridOptions> as PyType>::to_string()
+        )
+    }
+}
+#[py_type_gen]
 #[pymethods]
 impl PyGrid {
     fn draw_png(
@@ -77,9 +90,11 @@ impl PyGrid {
     }
 }
 
+#[py_type_gen]
 #[pyclass(name="HexGrid", extends=PyGrid)]
 struct PyHexGrid;
 
+#[py_type_gen]
 #[pymethods]
 impl PyHexGrid {
     #[new]
@@ -93,9 +108,11 @@ impl PyHexGrid {
     }
 }
 
+#[py_type_gen]
 #[pyclass(name="SquareGrid", extends=PyGrid)]
 struct PySquareGrid;
 
+#[py_type_gen]
 #[pymethods]
 impl PySquareGrid {
     #[new]
