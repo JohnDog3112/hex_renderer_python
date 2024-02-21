@@ -3,6 +3,7 @@ use interface_macros::py_gen;
 
 #[py_gen(remote = Color)]
 #[derive(Clone)]
+///Color!!
 pub struct PyColor(
     #[py_gen(name = "r")]
     u8,

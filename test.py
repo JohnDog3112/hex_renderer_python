@@ -79,3 +79,5 @@ patterns = [
 hex_grid = HexGrid(patterns, 50)
 
 hex_grid.draw_to_file("test.png", 50, gradient)
+
+

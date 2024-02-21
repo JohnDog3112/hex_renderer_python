@@ -5,6 +5,7 @@ use super::{color::PyColor, marker::PyMarker};
 
 #[py_gen(remote = OverloadOptions)]
 #[derive(Clone)]
+///Overload Options
 pub enum PyOverloadOptions {
     Dashes(
         #[py_gen(name = "color", remote = PyColor)]

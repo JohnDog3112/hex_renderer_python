@@ -1,6 +1,6 @@
 use proc_macro2::{Span, TokenStream, Literal};
-use syn::{Item, Error, Result, Ident, Type, parse::Parse, Token, LitStr, LitBool, Attribute, parse2, ItemStruct, ItemEnum};
-use quote::{quote, ToTokens};
+use syn::{Item, Error, Result, Ident, Type, parse::Parse, Token, LitStr, LitBool, Attribute, parse2, ItemStruct, ItemEnum, Expr, Lit};
+use quote::{quote, ToTokens, TokenStreamExt};
 
 use crate::Arguments;
 
@@ -96,12 +96,12 @@ impl FromIterator<FieldArgs> for Result<FieldArgs>   {
 }
 
 fn parse_field_attrs(inp: &Vec<Attribute>) -> Result<FieldArgs> {
-    inp.iter().map(|attr| {
+    inp.iter().filter_map(|attr| {
         match &attr.meta {
             syn::Meta::List(list) => {
-                parse2::<FieldArgs>(list.tokens.clone())
+                Some(parse2::<FieldArgs>(list.tokens.clone()))
             },
-            _ => Err(Error::new_spanned(attr.clone(), "expected list")),
+            _ => None,
         }
     }).collect::<Result<Vec<FieldArgs>>>()?
     .into_iter()
@@ -143,6 +143,39 @@ fn gen_construction_args(named: bool, fields: &Vec<(FieldArgs, &Type)>) -> Token
     }
 
 }
+fn get_doc_comments(attrs: &Vec<Attribute>) -> TokenStream {
+    attrs.iter().filter(|attr| {
+        match &attr.meta {
+            syn::Meta::NameValue(name_val) => {
+                //eprintln!("name_val: {:?}", name_val.path.get_ident());
+
+                let Some(ident) = name_val.path.get_ident() else {
+                    return false;
+                };
+                if ident.to_string() != "doc" {
+                    return false;
+                };
+                let Expr::Lit(expr) = &name_val.value else {
+                    return false;
+                };
+
+                let Lit::Str(str) = &expr.lit else {
+                    return false;
+                };
+
+                eprintln!("{:?}", attr.meta);
+                return true;
+               // name_val.\
+            },
+            _ => return false,
+        }
+    }).map(|a| {
+            quote!(#a)
+        }).fold(TokenStream::new(), |mut acc, a| {
+            acc.append_all(a);
+            acc
+        })
+}
 
 fn py_gen_struct(struct_args: Arguments, input: ItemStruct) -> Result<TokenStream> {
 
@@ -160,6 +193,10 @@ fn py_gen_struct(struct_args: Arguments, input: ItemStruct) -> Result<TokenStrea
 
         Ok((args, ty))
     }).collect::<Result<Vec<_>>>()?;
+
+    let field_comments = input.fields.iter().map(|field| {
+        get_doc_comments(&field.attrs)
+    }).collect::<Vec<TokenStream>>();
 
     
     let new_args: TokenStream = fields.iter().map(|(args, ty)| {
@@ -179,7 +216,7 @@ fn py_gen_struct(struct_args: Arguments, input: ItemStruct) -> Result<TokenStrea
 
     let constructor = gen_construction_args(named, &fields);
 
-    let getters: TokenStream = fields.iter().enumerate().map(|(i,(args, ty))| {
+    let getters: TokenStream = fields.iter().enumerate().zip(field_comments).map(|((i,(args, ty)), comments)| {
         let ident = args.name.clone().unwrap();
         let get_ident = Ident::new(&format!("get_{ident}"), ident.span());
         
@@ -190,10 +227,13 @@ fn py_gen_struct(struct_args: Arguments, input: ItemStruct) -> Result<TokenStrea
             quote!(self.0.#i.clone())
         };
 
+        eprintln!("comments: \n{}", comments);
+
         match &args.remote {
             Some(remote) => {
                 quote!{
                     #[getter]
+                    #comments
                     fn #get_ident(&self, py: ::pyo3::Python) -> ::pyo3::PyResult<<#ty as ::interface_macros::PyBridge<#remote>>::PyOut> {
                         <#ty as ::interface_macros::PyBridge<#remote>>::into_py(#item, py)
                     }
@@ -202,6 +242,7 @@ fn py_gen_struct(struct_args: Arguments, input: ItemStruct) -> Result<TokenStrea
             None => {
                 quote!{
                     #[getter]
+                    #comments
                     fn #get_ident(&self) -> #ty {
                         #item
                     }
@@ -305,6 +346,8 @@ fn py_gen_struct(struct_args: Arguments, input: ItemStruct) -> Result<TokenStrea
     })
 }
 
+
+
 fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
 
     let vis = &input.vis;
@@ -344,6 +387,10 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
             Ok((args, ty))
         }).collect::<Result<Vec<_>>>()?;
 
+        let field_comments = variant.fields.iter().map(|field| {
+            get_doc_comments(&field.attrs)
+        }).collect::<Vec<TokenStream>>();
+
         let new_fields: TokenStream = fields.iter().map(|(args, ty)| {
             let ident = args.name.clone().unwrap();
             match &args.remote {
@@ -382,12 +429,11 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
             syn::Fields::Unit => quote!(),
         };
 
-        let getters: TokenStream = fields.iter().map(|(args, ty)| {
+        let getters: TokenStream = fields.iter().zip(field_comments).map(|((args, ty),comments)| {
             let raw_arg_ident = args.name.clone().unwrap();
             let get_ident = Ident::new(&format!("get_{raw_arg_ident}"), raw_arg_ident.span());
             let arg_ident = Ident::new(&format!("_{raw_arg_ident}"), raw_arg_ident.span());
             
-
             let (ret, ty) = match &args.remote {
                 Some(remote) => (
                     quote!(<#ty as ::interface_macros::PyBridge<#remote>>::into_py(#arg_ident.clone(), py)), 
@@ -398,6 +444,7 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
 
             quote!{
                 #[getter]
+                #comments
                 fn #get_ident(self_: ::pyo3::PyRef<'_, Self>, py: ::pyo3::Python) -> ::pyo3::PyResult<#ty> {
                     let super_ = self_.as_ref();
 
@@ -448,11 +495,12 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
             }
         }).collect();
 
-        
+        let doc_comments = get_doc_comments(&variant.attrs);
 
         Ok((quote!{
             #[::interface_macros::py_type_gen(nested = #ident)]
             #[::pyo3::pyclass(extends=#ident, name = #variant_ident_str)]
+            #doc_comments
             struct #variant_ident;
 
             #[::interface_macros::py_type_gen]

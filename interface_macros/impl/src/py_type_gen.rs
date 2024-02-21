@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
 use proc_macro2::{TokenStream, TokenTree};
-use quote::{quote, ToTokens};
-use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType, Pat, LitStr, Attribute, ItemStruct, ItemImpl, FnArg};
+use quote::{quote, ToTokens, TokenStreamExt};
+use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType, Pat, LitStr, Attribute, ItemStruct, ItemImpl, FnArg, Expr, Lit, ExprLit};
 
 use crate::TypeArgs;
 
@@ -176,6 +176,44 @@ fn type_fn(_args: TypeArgs, input: ItemFn) -> Result<TokenStream> {
     } else {
         name
     };
+
+    let doc_comments: Vec<String> = input.attrs.iter().flat_map(|attr| {
+        match &attr.meta {
+            syn::Meta::NameValue(name_val) => {
+                //eprintln!("name_val: {:?}", name_val.path.get_ident());
+
+                let Some(ident) = name_val.path.get_ident() else {
+                    return vec![None]
+                };
+                if ident.to_string() != "doc" {
+                    return vec![None]
+                };
+                let Expr::Lit(expr) = &name_val.value else {
+                    return vec![None]
+                };
+
+                let Lit::Str(str) = &expr.lit else {
+                    return vec![None]
+                };
+                str.value()
+                    .split("\n")
+                    .map(|a| Some(a.to_string()))
+                    .collect()
+               // name_val.\
+            },
+            _ => vec![None]
+        }
+    }).filter_map(|a| a)
+    .collect();
+
+    //eprintln!("comments: {:?}", doc_comments);
+    let doc_comments = doc_comments.into_iter()
+        .fold(TokenStream::new(), |mut acc, e| {
+            acc.extend(quote!(#e,));
+            acc
+        });
+    //eprintln!("hi: {:?}", doc_comments);
+
     Ok(quote! {
         #input
 
@@ -187,6 +225,7 @@ fn type_fn(_args: TypeArgs, input: ItemFn) -> Result<TokenStream> {
         ::interface_macros::inventory::submit! {
             ::interface_macros::StoredPyTypes::new_func(
                 #name,
+                &[#doc_comments],
                 &[#arg_types],
                 {
                     ::interface_macros::lazy_static!{
@@ -220,6 +259,9 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
     } else {
         quote! {}
     };
+
+    let doc_comments = get_doc_comments(&input.attrs);
+
     
     let name = &input.ident;
     let properties = setup_type_properties(name);
@@ -239,10 +281,11 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
             }
         }
 
-        #[cfg(tesst)]
+        #[cfg(test)]
         ::interface_macros::inventory::submit! {
             ::interface_macros::StoredPyTypes::new_class(
-                #properties
+                #properties,
+                &[#doc_comments]
             )
         }
 
@@ -293,6 +336,43 @@ fn parse_type(ty: &mut Type, class: &Type) {
     }
 }
 
+fn get_doc_comments(attrs: &Vec<Attribute>) -> TokenStream {
+    let doc_comments: Vec<String> = attrs.iter().flat_map(|attr| {
+        match &attr.meta {
+            syn::Meta::NameValue(name_val) => {
+                //eprintln!("name_val: {:?}", name_val.path.get_ident());
+
+                let Some(ident) = name_val.path.get_ident() else {
+                    return vec![None]
+                };
+                if ident.to_string() != "doc" {
+                    return vec![None]
+                };
+                let Expr::Lit(expr) = &name_val.value else {
+                    return vec![None]
+                };
+
+                let Lit::Str(str) = &expr.lit else {
+                    return vec![None]
+                };
+                str.value()
+                    .split("\n")
+                    .map(|a| Some(a.to_string()))
+                    .collect()
+               // name_val.\
+            },
+            _ => vec![None]
+        }
+    }).filter_map(|a| a)
+    .collect();
+
+    //eprintln!("comments: {:?}", doc_comments);
+    doc_comments.into_iter()
+        .fold(TokenStream::new(), |mut acc, e| {
+            acc.extend(quote!(#e,));
+            acc
+        })
+}
 fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
     let mut to_check: Vec<Type> = Vec::new();
 
@@ -307,12 +387,16 @@ fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
             _ => return Err(Error::new_spanned(item.clone(), "only functions are supported")),
         };
 
+
         let attrs: HashSet<String> = HashSet::from_iter(func.attrs.iter().filter_map(|attr| {
+            //eprintln!("attr: {:?}", attr);
             match &attr.meta {
                 syn::Meta::Path(path) => Some(path.to_token_stream().to_string()),
                 _ => None
             }
         }));
+
+        
         
         /*let parse_out = |ret: &ReturnType| -> TokenStream {
             
@@ -388,9 +472,12 @@ fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
         } else {
             quote!(::interface_macros::PyFuncType::Normal)
         };
+
+        let doc_comments = get_doc_comments(&func.attrs);
         Ok(quote!{
             &::interface_macros::PyFunc {
                 name: #name,
+                comments: &[#doc_comments],
                 args: &[#args],
                 ret: {
                     ::interface_macros::lazy_static! {
@@ -403,6 +490,8 @@ fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
             },
         })
     }).collect::<Result<TokenStream>>()?;
+
+    //eprintln!("\n\nfuncs: {}", funcs);
 
     let type_checks = to_check.into_iter().map(|ty| {
         quote! {
