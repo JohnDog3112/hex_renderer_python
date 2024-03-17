@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
 use proc_macro2::{TokenStream, TokenTree};
-use quote::{quote, ToTokens, TokenStreamExt};
-use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType, Pat, LitStr, Attribute, ItemStruct, ItemImpl, FnArg, Expr, Lit, ExprLit};
+use quote::{quote, ToTokens};
+use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType, Pat, LitStr, Attribute, ItemStruct, ItemImpl, FnArg, Expr, Lit};
 
 use crate::TypeArgs;
 
@@ -244,7 +244,7 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
     let py_path = if let Some(nested) = args.nested {
         quote! {
             const PATH: &'static [&'static ::core::primitive::str] = &{
-                const PREV_PATH: &[&::core::primitive::str] = <#nested as ::interface_macros::PyType>::PATH;
+                const PREV_PATH: &[&::core::primitive::str] = <#nested as ::interface_macros::PyPath>::PATH;
                 let mut path: [&str; PREV_PATH.len()+1] = [""; PREV_PATH.len()+1];
                 
                 let mut i = 0;
@@ -252,7 +252,8 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
                     path[i] = PREV_PATH[i];
                     i += 1;
                 }
-                path[path.len()-1] = <#nested as ::pyo3::type_object::PyTypeInfo>::NAME;
+                //path[path.len()-1] = <#nested as ::pyo3::type_object::PyTypeInfo>::NAME;
+                path[path.len()-1] = <#nested as ::interface_macros::PyPath>::NAME;
                 path
             };
         }
@@ -271,7 +272,8 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
 
         impl ::interface_macros::PyType for #name {
 
-            #py_path
+            //#py_path
+            const PATH: &'static [&'static str] = <#name as ::interface_macros::PyPath>::PATH;
 
             fn to_string() -> String {
                 <Self as ::pyo3::type_object::PyTypeInfo>::NAME.to_string()
@@ -279,6 +281,11 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
             fn extend_string() -> String {
                 <<Self as ::pyo3::impl_::pyclass::PyClassImpl>::BaseType as ::interface_macros::PyType>::path_string()
             }
+        }
+
+        impl ::interface_macros::PyPath for #name {
+            #py_path
+            const NAME: &'static str = <Self as ::pyo3::type_object::PyTypeInfo>::NAME;
         }
 
         #[cfg(test)]

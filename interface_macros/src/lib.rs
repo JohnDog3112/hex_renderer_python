@@ -7,6 +7,11 @@ pub use lazy_static::lazy_static;
 
 use pyo3::{Py, Python, PyResult, PyRef, PyClass};
 
+
+pub trait PyPath {
+    const PATH: &'static [&'static str] = &[];
+    const NAME: &'static str;
+}
 pub trait PyType {
     const PATH: &'static [&'static str] = &[];
     fn to_string() -> String;

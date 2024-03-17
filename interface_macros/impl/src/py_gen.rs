@@ -1,589 +1,803 @@
+
 use proc_macro2::{Span, TokenStream, Literal};
-use syn::{Item, Error, Result, Ident, Type, parse::Parse, Token, LitStr, LitBool, Attribute, parse2, ItemStruct, ItemEnum, Expr, Lit};
-use quote::{quote, ToTokens, TokenStreamExt};
+use syn::{Item, Error, Result, Ident, Type, Token, LitStr, Attribute, ItemStruct, ItemEnum, Fields, spanned::Spanned, Field, parse::Parse};
+use quote::{quote, ToTokens};
 
 use crate::Arguments;
 
 pub fn py_gen_impl(args: Arguments, input: Item) -> Result<TokenStream> {
 
     match input {
-        Item::Enum(enu) => py_gen_enum(args, enu),
+        Item::Enum(enu) => {
+            //py_gen_enum(args, enu)
+            py_gen_enum(args, enu)
+        },
         Item::Struct(struc) => py_gen_struct(args, struc),
         _ => Err(Error::new(Span::call_site(), "expected enum or struct")),
     }
 }
 
-struct FieldArgs {
-    name: Option<Ident>,
-    remote: Option<Type>,
-    parent: bool,
-}
-impl FieldArgs {
-    fn new() -> Self {
-        Self {
-            name: None,
-            remote: None,
-            parent: false,
-        }
-    }
-}
-impl Parse for FieldArgs {
-    fn parse(input: syn::parse::ParseStream) -> Result<Self> {
-        let mut fields = Self::new();
-
-        while !input.is_empty() {
-            let next: Ident = input.parse()?;
-
-            match &next.to_string()[..] {
-                "name" => {
-                    input.parse::<Token![=]>()?;
-                    let name: LitStr = input.parse()?;
-
-                    if fields.name.is_some() {
-                        return Err(Error::new(next.span(), "can't set name more than once"));
-                    }
-                    fields.name = Some(Ident::new(&name.value(), name.span()));
-                },
-                "remote" => {
-                    input.parse::<Token![=]>()?;
-                    let remote: Type = input.parse()?;
-
-                    if fields.remote.is_some() {
-                        return Err(Error::new(next.span(), "can't set remote more than once"));
-                    }
-                    fields.remote = Some(remote);
-                },
-                "parent" => {
-                    input.parse::<Token![=]>()?;
-                    let parent: LitBool = input.parse()?;
-
-                    fields.parent = parent.value();
-                }
-                _ => return Err(Error::new(next.span(), "unknown attribute"))
-            };
-
-            if !input.is_empty() {
-                input.parse::<Token![,]>()?;
-            }
-        }
-
-        Ok(fields)
-    }
-}
-
-impl FromIterator<FieldArgs> for Result<FieldArgs>   {
-    fn from_iter<T: IntoIterator<Item = FieldArgs>>(iter: T) -> Result<FieldArgs> {
-        iter.into_iter().fold(Ok(FieldArgs::new()), |acc, e| {
-            let mut acc = acc?;
-
-            if acc.name.is_none() && e.name.is_some() {
-                acc.name = e.name;
-            } else if acc.name.is_some() && e.name.is_some() {
-                return Err(Error::new(e.name.unwrap().span(), "can't set name for than once"))
-            }
-
-            if acc.remote.is_none() && e.remote.is_some() {
-                acc.remote = e.remote;
-            } else if acc.remote.is_some() && e.remote.is_some() {
-                return Err(Error::new_spanned(e.remote.unwrap().clone(), "can't set remote more than once"))
-            }
-
-            acc.parent = e.parent;
-
-            Ok(acc)
-        })
-    }
-}
-
-fn parse_field_attrs(inp: &Vec<Attribute>) -> Result<FieldArgs> {
-    inp.iter().filter_map(|attr| {
-        match &attr.meta {
-            syn::Meta::List(list) => {
-                Some(parse2::<FieldArgs>(list.tokens.clone()))
-            },
-            _ => None,
-        }
-    }).collect::<Result<Vec<FieldArgs>>>()?
-    .into_iter()
-    .collect()
-}
-
-fn gen_construction_args(named: bool, fields: &Vec<(FieldArgs, &Type)>) -> TokenStream {
-
-    let creation_args: TokenStream = fields.iter().map(|(args, ty)| {
-        let name = args.name.clone().unwrap();
-
-        match &args.remote {
-            Some(remote) => {
-                let into = quote!(
-                    <#ty as ::interface_macros::PyBridge<#remote>>::from_py(#name, py)?
-                );
-                if named {
-                    quote!(#name: #into,)
-                } else {
-                    quote!(#into,)
-                }
-            },
-            None => quote!(#name,),
-        }
-    }).collect();
-    
-    if named {
-        quote!{
-            {
-                #creation_args
-            }
-        }
-    } else {
-        quote!{
-            (
-                #creation_args
-            )
-        }
-    }
-
-}
-fn get_doc_comments(attrs: &Vec<Attribute>) -> TokenStream {
-    attrs.iter().filter(|attr| {
-        match &attr.meta {
-            syn::Meta::NameValue(name_val) => {
-                //eprintln!("name_val: {:?}", name_val.path.get_ident());
-
-                let Some(ident) = name_val.path.get_ident() else {
-                    return false;
-                };
-                if ident.to_string() != "doc" {
-                    return false;
-                };
-                let Expr::Lit(expr) = &name_val.value else {
-                    return false;
-                };
-
-                let Lit::Str(str) = &expr.lit else {
-                    return false;
-                };
-
-                eprintln!("{:?}", attr.meta);
-                return true;
-               // name_val.\
-            },
-            _ => return false,
-        }
-    }).map(|a| {
-            quote!(#a)
-        }).fold(TokenStream::new(), |mut acc, a| {
-            acc.append_all(a);
-            acc
-        })
-}
-
-fn py_gen_struct(struct_args: Arguments, input: ItemStruct) -> Result<TokenStream> {
-
-    let fields = input.fields.iter().map(|field| -> Result<(FieldArgs, &Type)> {
-        let mut args = parse_field_attrs(&field.attrs)?;
-        let ty = &field.ty;
-
-        args.name = if let Some(name) = args.name {
-            Some(name)
-        } else if let Some(name) = field.ident.clone() {
-            Some(name)
-        } else {
-            return Err(Error::new_spanned(field.clone(), "no name specified, expected `#[py_gen(name = \"<name\"]`"))
+fn get_comments(attrs: &Vec<Attribute>) -> Vec<Attribute> {
+    attrs.iter()
+    .filter_map(|attr| {
+        let name_val = match &attr.meta {
+            syn::Meta::NameValue(name_val) => name_val,
+            _ => return None,
         };
 
-        Ok((args, ty))
-    }).collect::<Result<Vec<_>>>()?;
-
-    let field_comments = input.fields.iter().map(|field| {
-        get_doc_comments(&field.attrs)
-    }).collect::<Vec<TokenStream>>();
-
-    
-    let new_args: TokenStream = fields.iter().map(|(args, ty)| {
-        let name = args.name.clone().unwrap();
-        
-        match &args.remote {
-            Some(val) => quote!(#name: #val,),
-            None => quote!(#name: #ty,),
+        if name_val.path.segments[0].ident.to_string() != "doc"{
+            return None;
         }
-    }).collect();
 
-    let named = match &input.fields {
-        syn::Fields::Named(_) => true,
-        syn::Fields::Unnamed(_) => false,
-        syn::Fields::Unit => return Err(Error::new_spanned(input.clone(), "unit not supported")),
-    };
+        Some(attr.clone())
+    }).collect()
+}
 
-    let constructor = gen_construction_args(named, &fields);
+fn gen_into_froms(
+    into_name: TokenStream, 
+    from_name: TokenStream, 
+    into_struct: TokenStream, 
+    from_struct: TokenStream, 
+    fields: &Fields, 
+    field_attrs: &Vec<PyField>,
+    add_dot: bool
+) -> (TokenStream, TokenStream) {
+    let (intos, froms): (Vec<TokenStream>, Vec<TokenStream>) = field_attrs.iter().zip(fields.iter()).map(|(field_attr, field)| {
 
-    let getters: TokenStream = fields.iter().enumerate().zip(field_comments).map(|((i,(args, ty)), comments)| {
-        let ident = args.name.clone().unwrap();
-        let get_ident = Ident::new(&format!("get_{ident}"), ident.span());
-        
-        let item = if named {
-            quote!(self.0.#ident.clone())
-        } else {
-            let i = Literal::usize_unsuffixed(i);
-            quote!(self.0.#i.clone())
-        };
+        let (into, from) = (
+            if add_dot {
+                field_attr.field_name.prepend(into_name.clone())
+            } else {
+                field_attr.field_name.prepend_no_dot(into_name.clone())
+            },
+            field_attr.field_name.prepend(from_name.clone())
+        );
 
-        eprintln!("comments: \n{}", comments);
-
-        match &args.remote {
-            Some(remote) => {
-                quote!{
-                    #[getter]
-                    #comments
-                    fn #get_ident(&self, py: ::pyo3::Python) -> ::pyo3::PyResult<<#ty as ::interface_macros::PyBridge<#remote>>::PyOut> {
-                        <#ty as ::interface_macros::PyBridge<#remote>>::into_py(#item, py)
-                    }
-                }
+        match &field_attr.convert {
+            Some(convert) => {
+                let ty = &field.ty;
+                (
+                    quote!(<#convert as ::interface_macros::PyBridge<#ty>>::into_py(#into, _py)?),
+                    quote!(<#convert as ::interface_macros::PyBridge<#ty>>::from_py(#from, _py)?)
+                )
             },
             None => {
-                quote!{
-                    #[getter]
-                    #comments
-                    fn #get_ident(&self) -> #ty {
-                        #item
-                    }
+                (into, from)
+            },
+        }
+    }).unzip();
+    
+    let (into, from) = match &fields {
+        Fields::Named(_) => {
+            let into = intos.iter().zip(field_attrs.iter()).map(|(into, field)| {
+                let field_name = match &field.field_name {
+                    FieldName::Num(_) => unreachable!(),
+                    FieldName::Name(name) => name,
+                };
+                quote!(#field_name: #into,)
+            }).collect::<TokenStream>();
+            let from = froms.iter().zip(field_attrs.iter()).map(|(from, field)| {
+                let field_name = match &field.field_name {
+                    FieldName::Num(_) => unreachable!(),
+                    FieldName::Name(name) => name,
+                };
+                quote!(#field_name: #from,)
+            }).collect::<TokenStream>();
+
+            (
+                quote!(#into_struct { #into }),
+                quote!(#from_struct { #from })
+            )
+
+        },
+        Fields::Unnamed(_) => {
+            let into: TokenStream = intos.iter().map(|a| quote!(#a,)).collect();
+            let from: TokenStream = froms.iter().map(|a| quote!(#a,)).collect();
+
+            (
+                quote!(#into_struct (#into)),
+                quote!(#from_struct (#from))
+            )
+        },
+        Fields::Unit => {
+            (
+                quote!(#into_struct),
+                quote!(#from_struct)
+            )
+        },
+    };
+
+    (into, from)
+}
+fn py_gen_struct(args: Arguments, input: ItemStruct) -> Result<TokenStream> {
+    let ident = input.ident;
+    let mut fields = input.fields;
+    let mut attrs = input.attrs;
+
+    let field_attrs = gen_field_attrs(&mut fields)?;
+
+    let py_methods = gen_py_methods(&ident, &mut fields, &field_attrs, &mut attrs)?;
+    
+    let semi = input.semi_token;
+    let attrs = TokenStream::from_iter(attrs.into_iter().map(|a| a.to_token_stream()));
+    
+    let name = match &args.bridge {
+        Some(bridge) => bridge.to_string(),
+        None => ident.to_string(),
+    };
+
+    let bridge = args.bridge.map(|bridge| {
+
+        let (into, from) = gen_into_froms(quote!(self), quote!(val), quote!(#ident), quote!(Self), &fields, &field_attrs, true);
+        quote!{
+            impl ::interface_macros::PyBridge<#ident> for #bridge {
+                type PyOut = #ident;
+
+                fn into_py(self, _py: ::pyo3::Python) -> ::pyo3::PyResult<Self::PyOut> {
+                    Ok(#into)
+                }
+                fn from_py(val: #ident, _py: ::pyo3::Python) -> ::pyo3::PyResult<Self> {
+                    Ok(#from)
                 }
             }
         }
-    }).collect();
+    });
 
-    let withs: TokenStream = fields.iter().enumerate().map(|(i, (args, ty))| {
-
-        let ident = args.name.clone().unwrap();
-
-        let with_ident = Ident::new(&format!("with_{ident}"), ident.span());
-
-        let set_index = if named {
-            quote!(val.#ident)
-        } else {
-            let i = Literal::usize_unsuffixed(i);
-            quote!(val.#i)
-        };
-
-
-        let (val, ty) = match &args.remote {
-            Some(remote) => (
-                quote!{
-                    //#ident.into()
-                    <#ty as ::interface_macros::PyBridge<#remote>>::from_py(#ident, py)?
-                }, 
-                remote
-            ),
-            None => (quote!(#ident), *ty),
-        };
-
-        quote! {
-            fn #with_ident(&self, #ident: #ty, py: ::pyo3::Python) -> ::pyo3::PyResult<Self> {
-                let mut val = self.0.clone();
-                #set_index = #val;
-
-                Ok(Self(val))
-            }
-        }
-    }).collect();
-
-    
-    
-    
-    let remote = struct_args.remote;
 
     let vis = &input.vis;
-    let ident = &input.ident;
-
-    let remote_str = LitStr::new(&remote.to_string(), remote.span());
-
-    let attrs: TokenStream = input.attrs.iter().map(|attr| attr.into_token_stream()).collect();
-
-
     Ok(quote!{
-        #[::interface_macros::py_type_gen]
-        #[::pyo3::pyclass(name=#remote_str)]
         #attrs
-        #vis struct #ident(#vis #remote);
+        #[::interface_macros::py_type_gen]
+        #[::pyo3::pyclass(name = #name)]
+        #vis struct #ident #fields #semi
 
         #[::interface_macros::py_type_gen]
         #[::pyo3::pymethods]
-        impl #ident {
-            #[new]
-            #vis fn new(py: ::pyo3::Python, #new_args) -> ::pyo3::PyResult<Self> {
-                Ok(Self(
-                    #remote #constructor
-                ))
-                
+        #py_methods
+
+        #bridge
+    })
+}
+
+fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
+    let mut input = input;
+
+    let variant_idents = input.variants.iter().map(|variant| {
+        Ident::new(&format!("{}{}", input.ident.to_string(), variant.ident.to_string()), variant.span())
+    }).collect::<Vec<Ident>>();
+
+    let field_args = input.variants.iter_mut().map(|variant| {
+        gen_field_attrs(&mut variant.fields)
+    }).collect::<Result<Vec<_>>>()?;
+    
+    let sub_structs = input.variants
+    .iter_mut()
+    .zip(variant_idents.iter())
+    .zip(field_args.iter())
+    .map(|((variant, ident), field_attrs)| {
+        //let variant = variant.clone();
+        //let ident = variant.ident;
+
+        //let field_attrs = gen_field_attrs(&mut fields)?;
+
+        let py_methods = gen_py_methods(&ident, &mut variant.fields, &field_attrs, &mut variant.attrs)?;
+
+        let semi = match &variant.fields {
+            Fields::Named(_) => None,
+            Fields::Unnamed(_)
+            | Fields::Unit => Some(quote!(;)),
+        };
+        let attrs = TokenStream::from_iter(variant.attrs.iter().map(|a| a.to_token_stream()));
+
+        let fields = &variant.fields;
+
+        let mut name = format!("{}", variant.ident.to_string());
+        if name == "None" {
+            name = "None_".to_string();
+        }
+
+        let inp_ident = &input.ident;
+        let vis = &input.vis;
+        Ok(quote! {
+            #attrs
+            #[::interface_macros::py_type_gen(nested = #inp_ident)]
+            #[::pyo3::pyclass(name = #name)]
+            #vis struct #ident #fields #semi
+            
+            #[::interface_macros::py_type_gen]
+            #[::pyo3::pymethods]
+            #py_methods
+        })
+    }).collect::<Result<TokenStream>>()?;
+
+    let ident = &input.ident;
+
+    let enum_fields = input.variants.iter().zip(variant_idents.iter()).map(|(variant, variant_ident)| {
+        let ident = &variant.ident;
+        quote!(#ident(#variant_ident),)
+    }).collect::<TokenStream>();
+
+    let into_py_match = input.variants.iter().zip(variant_idents.iter()).map(|(variant, variant_struct_ident)| {
+        let variant_ident = &variant.ident;
+        quote!(#ident::#variant_ident(a) => <#variant_struct_ident as ::pyo3::IntoPy<::pyo3::Py<::pyo3::PyAny>>>::into_py(a, py),)
+    }).collect::<TokenStream>();
+
+    let bridge = args.bridge.clone().map(|bridge| {
+
+        let (into, from): (TokenStream, TokenStream) = input
+        .variants
+        .iter()
+        .zip(variant_idents.iter())
+        .zip(field_args.iter())
+        .map(|((variant, variant_struct_ident), field_attrs)| {
+            
+            let variant_ident = &variant.ident;
+            let fields = &variant.fields;
+
+            //let field_attrs = gen_field_attrs(&mut fields).unwrap();
+
+            let (into, from) = gen_into_froms(quote!(a), quote!(a), quote!(#variant_struct_ident), quote!(Self::#variant_ident), &fields, &field_attrs, false);
+
+
+            let breakdown = match &variant.fields {
+                Fields::Named(_) => {
+                    let fields: TokenStream = variant.fields.iter().map(|field| {
+                        let ident = field.ident.clone().unwrap();
+                        let new_ident = Ident::new(&format!("a{}", ident), ident.span());
+                        quote!(#ident: #new_ident,)
+                    }).collect();
+
+                    quote!({ #fields })
+                },
+                Fields::Unnamed(_) => {
+                    let fields: TokenStream = variant.fields.iter().enumerate().map(|(i, field)| {
+                        let ident = Ident::new(&format!("a{i}"), field.span());
+                        quote!(#ident,)
+                    }).collect();
+                    quote!( (#fields) )
+                },
+                Fields::Unit => quote!(),
+            };
+
+            let into = quote!(Self :: #variant_ident #breakdown => #ident :: #variant_ident(#into),);
+
+            let from = quote!(#ident :: #variant_ident(a) => #from,);
+            
+            (into, from)
+        }).unzip();
+
+        quote! {
+            impl ::interface_macros::PyBridge<#ident> for #bridge {
+                type PyOut = #ident;
+
+                fn into_py(self, _py: ::pyo3::Python) -> ::pyo3::PyResult<Self::PyOut> {
+                    Ok(match self {
+                        #into
+                    })
+                }
+                fn from_py(val: #ident, _py: ::pyo3::Python) -> ::pyo3::PyResult<Self> {
+                    Ok(match val {
+                        #from
+                    })
+                }
             }
+        }
+    });
 
-            #getters
+    
+    let py_path_name = if let Some(bridge) = &args.bridge {
+        bridge.to_string()
+    } else {
+        input.ident.to_string()
+    };
 
-            #withs
+    let py_type_str = variant_idents.iter().fold(None, |acc, e| {
+        let (str, mut args) = if let Some((str, args)) = acc {
+            (format!("{str} | {{}}"), args)
+        } else {
+            (format!("{{}}"),TokenStream::new())
+        };
 
-            fn __repr__(&self) -> String {
-                ::std::format!("{:?}", self.0)
+        args.extend(quote!(
+            <#e as ::interface_macros::PyType>::path_string(),
+        ));
+
+        Some((str, args))
+    });
+
+    let py_type = py_type_str.map(|(format_str, args)| {
+        quote! {
+            impl ::interface_macros::PyType for #ident {
+                fn to_string() -> String {
+                    format!(
+                        #format_str,
+                        #args
+                    )
+                }
+            }
+        }
+    });
+
+    let vis = &input.vis;
+
+    Ok(quote!{
+
+        #[derive(::pyo3::FromPyObject)]
+        #vis enum #ident {
+            #enum_fields
+        }
+
+        impl ::pyo3::IntoPy<::pyo3::Py<::pyo3::PyAny>> for #ident {
+            fn into_py(self, py: ::pyo3::Python<'_>) -> ::pyo3::Py<::pyo3::PyAny> {
+                match self {
+                    #into_py_match
+                }
             }
         }
 
-        impl #ident {
-            pub fn add_class(py: ::pyo3::Python, m: &::pyo3::types::PyModule) -> ::pyo3::PyResult<()> {
-                m.add_class::<#ident>()?;
+        #bridge
 
-                Ok(())
-            }
+        impl ::interface_macros::PyPath for #ident {
+            const NAME: &'static str = #py_path_name;
         }
 
-        impl ::interface_macros::PyBridge<#ident> for #remote {
-            type PyOut = #ident;
+        #py_type
+        
 
-            fn into_py(self, _py: ::pyo3::Python) -> ::pyo3::PyResult<Self::PyOut> {
-                Ok(#ident(self))
-            }
-            fn from_py(val: #ident, _py: ::pyo3::Python) -> ::pyo3::PyResult<Self> {
-                Ok(val.0)
-            }
-        }
+        #sub_structs
     })
 }
 
 
+const ATTR_PATH: &str = "py_gen";
 
-fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
+enum FieldName {
+    Num(usize),
+    Name(Ident)
+}
 
-    let vis = &input.vis;
-    let ident = &input.ident;
-    let remote = &args.remote;
+impl FieldName {
+    fn prepend(&self, prepend: TokenStream) -> TokenStream {
+        match self {
+            FieldName::Num(num) => {
+                let num = Literal::usize_unsuffixed(*num);
+                quote!(#prepend.#num)
+            },
+            FieldName::Name(name) => {
+                quote!(#prepend.#name)
+            },
+        }
+    }
 
-    let attrs: TokenStream = input.attrs.iter().map(|attr| attr.into_token_stream()).collect();
+    fn prepend_no_dot(&self, prepend: TokenStream) -> TokenStream {
+        match self {
+            FieldName::Num(num) => {
+                let ident = Ident::new(&format!("{}{}", prepend.to_string(), num), Span::call_site());
+                quote!(#ident)
+            },
+            FieldName::Name(name) => {
+                let ident = Ident::new(&format!("{}{}", prepend.to_string(), name), name.span());
+                quote!(#ident)
+            },
+        }
+    }
+}
 
+struct PyField {
+    name: Ident,
+    field_name: FieldName,
+    bridge: Option<Type>,
+    convert: Option<Type>,
+    comments: Vec<Attribute>,
+}
 
-    let variant_parts: (Vec<TokenStream>, Vec<TokenStream>) = input.variants.iter().map(|variant| {
+struct PyFieldBuilder {
+    name: Option<Ident>,
+    bridge: Option<Type>,
+    convert: Option<Type>,
+    comments: Vec<Attribute>,
+}
 
-        let raw_variant_ident = &variant.ident;
-        let variant_ident = Ident::new(&format!("{ident}{}", variant.ident), variant.ident.span());
-        let variant_ident_str = {
-            let st = &raw_variant_ident.to_string();
-            let st = if st == "None" {
-                "None_"
-            } else {
-                &st
-            };
-            LitStr::new(&st, raw_variant_ident.span())
-        };
-
-
-        let fields = variant.fields.iter().map(|field| -> Result<(FieldArgs, &Type)> {
-            let mut args = parse_field_attrs(&field.attrs)?;
-            let ty = &field.ty;
-    
-            args.name = if let Some(name) = args.name {
-                Some(name)
-            } else if let Some(name) = field.ident.clone() {
-                Some(name)
-            } else {
-                return Err(Error::new_spanned(field.clone(), "no name specified, expected `#[py_gen(name = \"<name\"]`"))
-            };
-    
-            Ok((args, ty))
-        }).collect::<Result<Vec<_>>>()?;
-
-        let field_comments = variant.fields.iter().map(|field| {
-            get_doc_comments(&field.attrs)
-        }).collect::<Vec<TokenStream>>();
-
-        let new_fields: TokenStream = fields.iter().map(|(args, ty)| {
-            let ident = args.name.clone().unwrap();
-            match &args.remote {
-                Some(val) => quote!(#ident: #val,),
-                None => quote!(#ident: #ty,),
+impl Parse for PyFieldBuilder {
+    fn parse(input: syn::parse::ParseStream) -> Result<Self> {
+        let mut builder = Self::new();
+        loop {
+            /*let ident = match tokens.next() {
+                Some(ident) => ident,
+                None => break,
+            };*/
+            if input.is_empty() {
+                break;
             }
-        }).collect();
 
-        let constructor = match &variant.fields {
-            syn::Fields::Named(_) => gen_construction_args(true, &fields),
-            syn::Fields::Unnamed(_) => gen_construction_args(false, &fields),
-            syn::Fields::Unit => quote!(),
+
+            /*let ident: Ident = syn::parse2(ident.clone().into())
+                .map_err(|_| Error::new(ident.span(), "Expected an ident"))?;*/
+
+            let ident: Ident = input.parse()?;
+
+            /*let equals = tokens.next()
+                .ok_or(Error::new(ident.span(), "Expected `<ident> = <item>`"))?;
+
+            let _equals: Token![=] = syn::parse2(equals.clone().into())
+                .map_err(|_| Error::new(equals.span(), "Expected `=`"))?;*/
+            input.parse::<Token![=]>()?;
+
+            /*let next = tokens.next()
+                .ok_or(Error::new(equals.span(), "Expected `<ident> = <item>`"))?;*/
+
+            match &ident.to_string()[..] {
+                "name" => {
+                    if builder.name.is_some() {
+                        return Err(Error::new(ident.span(), "can't have more than one name"));
+                    }
+
+                    /*let name: LitStr = syn::parse2(next.clone().into())
+                        .map_err(|_| Error::new(next.span(), "Expected `str`"))?;*/
+                    let name: LitStr = input.parse()?;
+
+                    let name = Ident::new(&name.value(), name.span());
+                    builder.name = Some(name);
+                },
+                "bridge" => {
+                    if builder.bridge.is_some() {
+                        return Err(Error::new(ident.span(), "can't have more than one bridge"));
+                    }
+
+                    /*let ty: Type = syn::parse2(next.clone().into())
+                        .map_err(|_| Error::new(next.span(), "Expected `type`"))?;*/
+
+                    let ty: Type = input.parse()?;
+
+                    builder.bridge = Some(ty);
+                },
+                "convert" => {
+                    if builder.convert.is_some() {
+                        return Err(Error::new(ident.span(), "can't have more than one convert"));
+                    }
+
+                    /*let ty: Type = syn::parse2(next.clone().into())
+                        .map_err(|_| Error::new(next.span(), "Expected `type`"))?;*/
+                    let ty: Type = input.parse()?;
+
+                    builder.convert = Some(ty);
+                },
+                _ => return Err(Error::new(ident.span(), "unkown attribute"))
+            }
+
+            /*match tokens.next() {
+                Some(comma) => {
+                    syn::parse2::<Token![,]>(comma.clone().into())
+                        .map_err(|_| Error::new(comma.span(), "Expected `,`"))?;
+                },
+                None => break,
+            }*/
+            if input.is_empty() {
+                break;
+            } else {
+                input.parse::<Token![,]>()?;
+            }
+
+        }
+        Ok(builder)
+    }
+    
+}
+impl PyFieldBuilder {
+    fn new() -> Self {
+        Self {
+            name: None,
+            bridge: None,
+            convert: None,
+            comments: Vec::new()
+        }
+    }
+
+    fn try_to_comment(value: &Attribute) -> Option<Self> {
+        let name_val = match &value.meta {
+            syn::Meta::NameValue(name_val) => name_val,
+            _ => return None,
         };
 
+        if name_val.path.segments[0].ident.to_string() != "doc" {
+            return None;
+        }
+
+        Some(
+            Self {
+                name: None,
+                bridge: None,
+                convert: None,
+                comments: vec![value.clone()]
+            }
+        )
+    }
+
+    fn try_from_attribute(value: &Attribute) -> Result<Option<Self>> {
+        let list = match &value.meta {
+            syn::Meta::List(list) => list,
+            _ => return Ok(Self::try_to_comment(value)),
+        };
+
+        if list.path.segments[0].ident.to_string() != ATTR_PATH {
+            return Ok(None);
+        }
+
+        //let mut tokens = list.tokens.clone().into_iter();
+
+        //let mut builder = PyFieldBuilder::new();
         
+        let builder = syn::parse2(list.tokens.clone())?;
 
-        let deconstruct_fields: TokenStream = match &variant.fields {
-            syn::Fields::Named(_) => {
-                let field_idents: TokenStream = fields.iter().map(|(field, _)| {
-                    let ident = field.name.clone().unwrap();
-                    let ident_new = Ident::new(&format!("_{ident}"), ident.span());
-                    quote!(#ident: #ident_new,)
-                }).collect();
 
-                quote!({#field_idents})
-            },
-            syn::Fields::Unnamed(_) => {
-                let field_idents: TokenStream = fields.iter().map(|(field, _)| {
-                    let ident = field.name.clone().unwrap();
-                    let ident = Ident::new(&format!("_{ident}"), ident.span());
-                    quote!(#ident,)
-                }).collect();
+        Ok(Some(builder))
+    }
 
-                quote!((#field_idents))
-            },
-            syn::Fields::Unit => quote!(),
+    fn build(fields: Vec<Self>, default_name: Ident, field_name: FieldName, comments: Vec<Attribute>) -> Result<PyField> {
+        let mut py_field = PyField {
+            name: default_name,
+            field_name,
+            bridge: None,
+            convert: None,
+            comments
         };
 
-        let getters: TokenStream = fields.iter().zip(field_comments).map(|((args, ty),comments)| {
-            let raw_arg_ident = args.name.clone().unwrap();
-            let get_ident = Ident::new(&format!("get_{raw_arg_ident}"), raw_arg_ident.span());
-            let arg_ident = Ident::new(&format!("_{raw_arg_ident}"), raw_arg_ident.span());
+        let mut defined_name = false;
+
+        for mut field in fields {
+            if let Some(name) = field.name {
+                if defined_name {
+                    return Err(Error::new(name.span(), "Can't have more than one name"))
+                }
+                defined_name = true;
+                py_field.name = name;
+            }
+
+            if let Some(bridge) = field.bridge {
+                if py_field.bridge.is_some() {
+                    return Err(Error::new(bridge.span(), "Can't have more than one bridge"));
+                }
+
+                py_field.bridge = Some(bridge);
+            }
+            if let Some(convert) = field.convert {
+                if py_field.convert.is_some() {
+                    return Err(Error::new(convert.span(), "Can't have more than one convert"));
+                }
+
+                py_field.convert = Some(convert);
+            }
+
+            py_field.comments.append(&mut field.comments)
+        }
+
+        match (&py_field.bridge, &py_field.convert) {
+            (Some(bridge), Some(_)) => {
+                return Err(Error::new(bridge.span(), "can't have a bridge and convert!"))
+            },
+            _ => ()
+        }
+        
+        Ok(py_field)
+
+    }
+}
+
+
+
+fn parse_field_attrs(attrs: &mut Vec<Attribute>, default_name: Ident, field_name: FieldName) -> Result<PyField> {
+    let mut old_attrs: Vec<Attribute> = vec![];
+    std::mem::swap(attrs, &mut old_attrs);
+
+    let fields = old_attrs.into_iter().filter_map(|a| {
+        match PyFieldBuilder::try_from_attribute(&a) {
+            Ok(ok) => {
+                match ok {
+                    Some(field) => Some(Ok(field)),
+                    None => {
+                        attrs.push(a);
+                        None
+                    },
+                }
+            },
+            Err(err) => Some(Err(err)),
+        }
+    }).collect::<Result<Vec<_>>>()?;
+
+
+    PyFieldBuilder::build(fields, default_name, field_name, vec![])
+} 
+
+fn gen_new(fields: &Fields, field_attrs: &Vec<PyField>, comments: &Vec<Attribute>) -> TokenStream {
+
+    let args = fields.iter()
+        .zip(field_attrs.iter())
+        .map(|(field, attrs)| {
+            let ty = match &attrs.bridge {
+                Some(bridge) => bridge,
+                None => &field.ty
+            };
+            let name = &attrs.name;
+            quote!(#name: #ty,)
+        }).collect::<TokenStream>();
+    
+    let names = field_attrs.iter().zip(fields.iter()).map(|(field_attr, field)| {
+        let name = &field_attr.name;
+        let ty = &field.ty;
+
+        match &field_attr.bridge {
+            Some(bridge) => {
+                quote!(<#ty as ::interface_macros::PyBridge<#bridge>>::from_py(#name, py)?)
+            },
+            None => {
+                quote!(#name)
+            },
+        }
+    }).collect::<Vec<TokenStream>>();
+
+    let initializer = match &fields {
+        Fields::Named(named) => {
+            let fields = named.named
+                .iter()
+                .zip(names.iter())
+                .map(|(field, inp_name)| {
+                    let field_name = field.ident.clone().unwrap();
+
+                    quote!(#field_name : #inp_name,)
+                }).collect::<TokenStream>();
             
-            let (ret, ty) = match &args.remote {
-                Some(remote) => (
-                    quote!(<#ty as ::interface_macros::PyBridge<#remote>>::into_py(#arg_ident.clone(), py)), 
-                    quote!(<#ty as ::interface_macros::PyBridge<#remote>>::PyOut)
-                ),
-                None => (quote!(Ok(#arg_ident.clone())), quote!(#ty)),
+            quote! {
+                Self {
+                    #fields
+                }
+            }
+        },
+        Fields::Unnamed(_) => {
+            let fields = names.iter().map(|name| {
+                quote!(#name,)
+            }).collect::<TokenStream>();
+
+            quote!(Self(#fields))
+        },
+        Fields::Unit => quote!(Self),
+    };
+
+    let comments: TokenStream = comments.iter().map(|a| a.to_token_stream()).collect();
+
+    let param_comments: TokenStream = field_attrs.iter().filter_map(|attr| {
+        let comment = if let Some(val) = attr.comments.get(0) {
+            let name_val = match &val.meta {
+                syn::Meta::NameValue(name_val) => name_val,
+                _ => unreachable!()
             };
 
+            name_val.value.to_token_stream().to_string()
+        } else {
+            return None;
+        };
+
+        let comment = &comment[1..comment.len()-1];
+
+        let field_name = attr.name.to_string();
+
+        let doc_str = format!(":param {}: {}", field_name, comment);
+        //let doc_str = "";
+        Some(quote!(#[doc = #doc_str]))
+    }).collect();
+    quote!{
+        #[new]
+        #comments
+        #param_comments
+        fn new(py: ::pyo3::Python, #args) -> ::pyo3::PyResult<Self> {
+            Ok(#initializer)
+        }
+    }
+}
+
+fn gen_getter(field: &Field, attr: &PyField) -> TokenStream {
+
+    let get_ident = Ident::new(&format!("get_{}", attr.name.to_string()), attr.name.span());
+
+    let getter = attr.field_name.prepend(quote!(self));
+
+    let ty = &field.ty;
+
+    let comments = attr.comments
+        .iter()
+        .map(|a| a.to_token_stream())
+        .collect::<TokenStream>();
+
+    match &attr.bridge {
+        Some(bridge) => {
             quote!{
                 #[getter]
                 #comments
-                fn #get_ident(self_: ::pyo3::PyRef<'_, Self>, py: ::pyo3::Python) -> ::pyo3::PyResult<#ty> {
-                    let super_ = self_.as_ref();
-
-                    if let #remote::#raw_variant_ident #deconstruct_fields = &super_.0 {
-                        #ret
-                    } else {
-                        Err(::pyo3::exceptions::PyTypeError::new_err("Malformed class? (How does this happen?)"))
-                    }
+                fn #get_ident(&self, py: ::pyo3::Python) -> ::pyo3::PyResult<<#ty as ::interface_macros::PyBridge<#bridge>>::PyOut> {
+                    <#ty as ::interface_macros::PyBridge<#bridge>>::into_py(#getter.clone(), py)
                 }
             }
-
-        }).collect();
-
-        let withs: TokenStream = fields.iter().map(|(args, ty)| {
-            let raw_arg_ident = args.name.clone().unwrap();
-            let with_ident = Ident::new(&format!("with_{raw_arg_ident}"), raw_arg_ident.span());
-            let arg_ident = Ident::new(&format!("_{raw_arg_ident}"), raw_arg_ident.span());
-
-
-
-            let into = match &args.remote {
-                Some(remote) => quote!(
-                    <#ty as ::interface_macros::PyBridge<#remote>>::from_py(#raw_arg_ident, py)?
-                ),
-                None => quote!(#raw_arg_ident.into())
-            };
-
-            let inner_ty = match &args.remote {
-                Some(val) => val,
-                None => *ty,
-            };
-
+        },
+        None => {
             quote!{
-                fn #with_ident(self_: ::pyo3::PyRef<'_, Self>, py: ::pyo3::Python, #raw_arg_ident: #inner_ty) -> ::pyo3::PyResult<::pyo3::Py<Self>> {
-                    let super_ = self_.as_ref();
-                    let mut val = super_.0.clone();
-
-                    if let #remote::#raw_variant_ident #deconstruct_fields = &mut val {
-                        *#arg_ident = #into;
-                    } else {
-                        return Err(::pyo3::exceptions::PyTypeError::new_err("Malformed class? (How does this happen?)"));
-                    }
-
-                    let init = ::pyo3::PyClassInitializer::from(#ident(val)).add_subclass(Self);
-
-                    ::pyo3::Py::new(py, init)
+                #[getter]
+                #comments
+                fn #get_ident(&self) -> #ty {
+                    #getter.clone()
                 }
             }
-        }).collect();
-
-        let doc_comments = get_doc_comments(&variant.attrs);
-
-        Ok((quote!{
-            #[::interface_macros::py_type_gen(nested = #ident)]
-            #[::pyo3::pyclass(extends=#ident, name = #variant_ident_str)]
-            #doc_comments
-            struct #variant_ident;
-
-            #[::interface_macros::py_type_gen]
-            #[::pyo3::pymethods]
-            impl #variant_ident {
-                #[new]
-                fn new(py: ::pyo3::Python, #new_fields) -> ::pyo3::PyResult<(Self, #ident)> {
-                    Ok((Self, #ident(#remote::#raw_variant_ident #constructor)))
-                }
-                #getters
-
-                #withs
-            }
-        }, deconstruct_fields))
-    }).collect::<std::result::Result<Vec<(TokenStream, TokenStream)>, Error>>()?
-    .into_iter()
-    .unzip();
-
-    let variant_defs: TokenStream = variant_parts.0.into_iter().collect();
-    let variant_deconstructors = variant_parts.1;
-
-    
-    let new_py: TokenStream = input.variants.iter().zip(variant_deconstructors).map(|(variant, deconstructor)| {
-        let raw_variant_ident = &variant.ident;
-        let variant_ident = Ident::new(&format!("{ident}{}", variant.ident), variant.ident.span());
-
-        quote! {
-            #remote::#raw_variant_ident #deconstructor => {
-                let init = ::pyo3::PyClassInitializer::from(#ident(self)).add_subclass(#variant_ident);
-
-                ::pyo3::Py::new(py, init)
-                    .map(|a| ::pyo3::IntoPy::into_py(a, py))?
-                    .extract(py)
-            },
         }
-    }).collect();
+    }
+}
 
-    let class_adders: TokenStream = input.variants.iter().map(|variant| {
-        let variant_ident = &variant.ident;
-        let ident = Ident::new(&format!("{ident}{variant_ident}"), variant_ident.span());
+fn gen_with(field: &Field, attr: &PyField) -> TokenStream {
 
-        quote!(namespace.add_class::<#ident>()?;)
-    }).collect();
+    let with_ident = Ident::new(&format!("with_{}", attr.name.to_string()), attr.name.span());
+
+    let attr_name = &attr.name;
+
+    let with = attr.field_name.prepend(quote!(val));
+
+    let ty = &field.ty;
+    match &attr.bridge {
+        Some(bridge) => {
+            quote! {
+                fn #with_ident(&self, #attr_name: #bridge, py: ::pyo3::Python) -> ::pyo3::PyResult<Self> {
+                    let mut val = self.clone();
+                    #with = <#ty as ::interface_macros::PyBridge<#bridge>>::from_py(#attr_name, py)?;
+
+                    Ok(val)
+                }
+            }
+        },
+        None => {
+            quote! {
+                fn #with_ident(&self, #attr_name: #ty) -> Self {
+                    let mut val = self.clone();
+                    #with = #attr_name;
+        
+                    val
+                }
+            }
+        },
+    }
     
-    let remote_str = LitStr::new(&remote.to_string(), ident.span());
+}
 
+fn gen_field_attrs(fields: &mut Fields) -> Result<Vec<PyField>> {
+    fields.iter_mut().enumerate().map(|(index, field)| {
+        let default_name = field.ident.clone().unwrap_or(
+            Ident::new(&format!("a{index}"), field.span())
+        );
+        let field_name = match &field.ident {
+            Some(val) => FieldName::Name(val.clone()),
+            None => FieldName::Num(index),
+        };
+        
+        parse_field_attrs(&mut field.attrs, default_name, field_name)
+    }).collect()
+}
+fn gen_py_methods(ident: &Ident, fields: &mut Fields, field_attrs: &Vec<PyField>, attrs: &mut Vec<Attribute>) -> Result<TokenStream> {
+
+    let comments = get_comments(attrs);
+
+    let new_func = gen_new(&fields, &field_attrs, &comments);
+
+    let getters = fields.iter().zip(field_attrs.iter()).map(|(field, attrs)| {
+        gen_getter(field, attrs)
+    }).collect::<TokenStream>();
+
+    let withs = fields.iter().zip(field_attrs.iter()).map(|(field, attrs)| {
+        gen_with(field, attrs)
+    }).collect::<TokenStream>();
 
     Ok(quote! {
-        #[::interface_macros::py_type_gen]
-        #[::pyo3::pyclass(subclass, name = #remote_str)]
-        #attrs
-        #vis struct #ident (#remote);
-
-        #[::pyo3::pymethods]
-        #[::interface_macros::py_type_gen]
         impl #ident {
-            fn __repr__(&self) -> String {
-                ::std::format!("{:?}", self.0)
-            }
+            #new_func
+
+            #getters
+
+            #withs
         }
-        impl #ident {
-            pub fn add_class(py: ::pyo3::Python, m: &::pyo3::types::PyModule) -> ::pyo3::PyResult<()> {
-                let namespace = ::pyo3::types::PyModule::new(py, #remote_str)?;
-                #class_adders
-                m.add_submodule(namespace)?;
-
-                Ok(())
-            }
-        }
-
-        impl ::interface_macros::PyBridge<#ident> for #remote {
-            type PyOut = ::pyo3::Py<#ident>;
-
-            fn into_py(self, py: ::pyo3::Python) -> ::pyo3::PyResult<Self::PyOut> {
-                match &self {
-                    #new_py
-                }
-            }
-            fn from_py(val: #ident, _py: ::pyo3::Python) -> ::pyo3::PyResult<Self> {
-                Ok(val.0)
-            }
-        }
-
-        #variant_defs
+        
     })
 }

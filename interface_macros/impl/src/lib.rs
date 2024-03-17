@@ -8,22 +8,25 @@ type ProcStream = proc_macro::TokenStream;
 
 #[derive(Debug)]
 struct Arguments {
-    remote: Ident
+    bridge: Option<Ident>
 }
 
 impl Parse for Arguments {
     fn parse(input: syn::parse::ParseStream) -> Result<Self> {
+        if input.is_empty() {
+            return Ok(Self { bridge: None });
+        }
         let ident: Ident = input.parse()?;
-        if ident.to_string() != "remote" {
-            return Err(Error::new(ident.span(), "expected remote"));
+        if ident.to_string() != "bridge" {
+            return Err(Error::new(ident.span(), "expected bridge"));
         }
 
         input.parse::<Token![=]>()?;
         
-        let remote: Ident = input.parse()?;
+        let bridge: Ident = input.parse()?;
 
         Ok(Self {
-            remote
+            bridge: Some(bridge)
         })
     }
 }

@@ -5,12 +5,15 @@ use pyo3::{pyclass, PyResult, exceptions::PyTypeError, Python, pymethods};
 #[py_type_gen]
 #[pyclass]
 #[derive(Clone)]
+///Angle sigs of a pattern (ex. qqq)
 pub struct AngleSig(Vec<Angle>);
 
 #[py_type_gen]
 #[pymethods]
 impl AngleSig {
     #[new]
+    ///Make a new angle sig
+    /// :param sigs: String of sigs (ex. qqq)
     fn new(sigs: String) -> PyResult<Self> {
         let sigs = sigs.chars()
             .map(Angle::try_from)
@@ -19,6 +22,7 @@ impl AngleSig {
 
         Ok(Self(sigs))
     }
+    /// gets the sigs as a string
     fn get_sigs(&self) -> String {
         self.0.iter().map(|angle| {
             match angle {
