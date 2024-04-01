@@ -19,16 +19,16 @@ pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
 #[derive(Clone)]
 ///How to draw all the points in a pattern, including start, end, and middle points
 pub enum PyIntersections {
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Doesn't draw any points
     Nothing,
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draws the same point for everything, including start and end
     UniformPoints(
         #[py_gen(name = "point", bridge = PyPoint)]
         Point,
     ),
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draws a different point for the start, end, and middle
     EndsAndMiddle {
         #[py_gen(bridge = PyEndPoint)]

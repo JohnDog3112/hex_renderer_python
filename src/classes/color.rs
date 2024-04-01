@@ -9,7 +9,7 @@ pub fn add_class(_py: Python, m: &PyModule) -> PyResult<()> {
 }
 
 #[py_gen(bridge = Color)]
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, PartialOrd)]
 ///Color struct, using RGBA
 pub struct PyColor(
     #[py_gen(name = "r")]

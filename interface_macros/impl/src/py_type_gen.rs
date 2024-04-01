@@ -267,32 +267,64 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
     let name = &input.ident;
     let properties = setup_type_properties(name);
 
+    let py_type = if let Some(module_name) = &args.module {
+        quote! {
+            impl ::interface_macros::PyType for #name {
+
+                //#py_path
+                const PATH: &'static [&'static str] = <#name as ::interface_macros::PyPath>::PATH;
+    
+                fn to_string() -> String {
+                   #module_name.to_string()
+                }
+                fn extend_string() -> String {
+                    <::pyo3::PyAny as ::interface_macros::PyType>::path_string()
+                }
+            }
+        }
+    } else {
+        quote! {
+            impl ::interface_macros::PyType for #name {
+
+                //#py_path
+                const PATH: &'static [&'static str] = <#name as ::interface_macros::PyPath>::PATH;
+    
+                fn to_string() -> String {
+                    <Self as ::pyo3::type_object::PyTypeInfo>::NAME.to_string()
+                }
+                fn extend_string() -> String {
+                    <<Self as ::pyo3::impl_::pyclass::PyClassImpl>::BaseType as ::interface_macros::PyType>::path_string()
+                }
+            }
+        }
+    };
+
+    let py_path_name = if let Some(name) = &args.module {
+        quote!(#name)
+    } else {
+        quote!(<Self as ::pyo3::type_object::PyTypeInfo>::NAME)
+    };
+
+    let declarations: TokenStream = args.declarations.iter().map(|dec| {
+        quote!(&#dec ,)
+    }).collect();
+
     Ok(quote! {
         #input
 
-        impl ::interface_macros::PyType for #name {
-
-            //#py_path
-            const PATH: &'static [&'static str] = <#name as ::interface_macros::PyPath>::PATH;
-
-            fn to_string() -> String {
-                <Self as ::pyo3::type_object::PyTypeInfo>::NAME.to_string()
-            }
-            fn extend_string() -> String {
-                <<Self as ::pyo3::impl_::pyclass::PyClassImpl>::BaseType as ::interface_macros::PyType>::path_string()
-            }
-        }
+        #py_type
 
         impl ::interface_macros::PyPath for #name {
             #py_path
-            const NAME: &'static str = <Self as ::pyo3::type_object::PyTypeInfo>::NAME;
+            const NAME: &'static str = #py_path_name;
         }
 
         #[cfg(test)]
         ::interface_macros::inventory::submit! {
             ::interface_macros::StoredPyTypes::new_class(
                 #properties,
-                &[#doc_comments]
+                &[#doc_comments],
+                &[#declarations]
             )
         }
 
@@ -382,17 +414,41 @@ fn get_doc_comments(attrs: &Vec<Attribute>) -> TokenStream {
 }
 fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
     let mut to_check: Vec<Type> = Vec::new();
+    let mut input = input;
 
     let class = &*input.self_ty;
 
 
-    let funcs = input.items.iter().map(|item| {
+    let funcs = input.items.iter_mut().filter_map(|item| {
         let func = match item {
             syn::ImplItem::Fn(func) => {
                 func
             },
-            _ => return Err(Error::new_spanned(item.clone(), "only functions are supported")),
+            _ => return Some(Err(Error::new_spanned(item.clone(), "only functions are supported"))),
         };
+
+        let mut ignored = false;
+        let mut tmp_attrs = Vec::new();
+
+        ::std::mem::swap(&mut func.attrs, &mut tmp_attrs);
+
+        func.attrs = tmp_attrs.into_iter().filter_map(|attr| {
+            match &attr.meta {
+                syn::Meta::Path(path) => {
+                    if path.to_token_stream().to_string() == "ignore" {
+                        ignored = true;
+                        None
+                    } else {
+                        Some(attr)
+                    }
+                },
+                _ => Some(attr)
+            }
+        }).collect();
+
+        if ignored {
+            return None;
+        }
 
 
         let attrs: HashSet<String> = HashSet::from_iter(func.attrs.iter().filter_map(|attr| {
@@ -481,7 +537,7 @@ fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
         };
 
         let doc_comments = get_doc_comments(&func.attrs);
-        Ok(quote!{
+        Some(Ok(quote!{
             &::interface_macros::PyFunc {
                 name: #name,
                 comments: &[#doc_comments],
@@ -495,7 +551,7 @@ fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
                 slf: #slf,
                 typ: #typ
             },
-        })
+        }))
     }).collect::<Result<TokenStream>>()?;
 
     //eprintln!("\n\nfuncs: {}", funcs);

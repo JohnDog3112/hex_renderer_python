@@ -19,18 +19,18 @@ pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
 #[derive(Clone)]
 ///Specifier for how to draw the start and end points on a pattern
 pub enum PyEndPoint {
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draw a normal point
     Point(
         #[py_gen(name = "point", bridge = PyPoint)]
         Point
     ),
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draw a point that matches the starting/ending color
     Match {
         radius: f32
     },
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draw a point that matches the starting/ending color with a border
     BorderedMatch {
         match_radius: f32,

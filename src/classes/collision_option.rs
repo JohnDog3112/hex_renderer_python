@@ -21,20 +21,20 @@ pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
 #[derive(Debug, Clone, Copy)]
 ///Options for drawing overlapping segments (impossible patterns)
 pub enum PyCollisionOption {
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draws the first segment and then dashes of the given color for the rest
     Dashes(
         #[py_gen(name = "color", bridge = PyColor)]
         ///Color of dashes to draw with
         Color
     ),
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draws the line as a set of dashes where the dash marks match the colors of the overlapping lines
     MatchedDashes,
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draws each of the segments as smaller, parallel lines all next to eachother
     ParallelLines,
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps
     OverloadedParallel {
         ///number of overlapping segments/lines before using the overload option

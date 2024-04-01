@@ -7,7 +7,7 @@ use crate::angles_to_string;
 #[derive(Debug, Clone)]
 #[py_type_gen]
 #[pyclass(name = "PatternVariant")]
-///A hexpattern that can be rendered on a grade
+///A hexpattern that can be rendered on a grid
 pub struct PyPatternVariant {
     dir_str: String,
     direction: Direction,

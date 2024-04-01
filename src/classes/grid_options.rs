@@ -12,7 +12,7 @@ pub fn add_class(_py: Python, m: &PyModule) -> PyResult<()> {
 }
 
 #[py_gen(bridge = GridOptions)]
-#[derive(Clone)]
+#[derive(Clone, PartialEq, PartialOrd, Debug)]
 ///Main struct for all pattern rendering options
 pub struct PyGridOptions {
     ///Thickness of line in relation to distance between points

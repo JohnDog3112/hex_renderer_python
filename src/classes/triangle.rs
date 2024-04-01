@@ -20,16 +20,16 @@ pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
 #[derive(Clone)]
 ///Options for drawing the triangle/arrow between color changes on the Segment Renderer
 pub enum PyTriangle {
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///None, simply don't draw them
     None,
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Match the color of the line
     Match {
         ///radius is how big it is (as a percentage of segment length)
         radius: f32
     },
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Same as Triangle.Match except with an extra border around it
     BorderMatch {
         ///radius of how big the match triangle is (as a percentage of segment length)
@@ -38,7 +38,7 @@ pub enum PyTriangle {
         ///a Marker for the border
         border: Marker
     },
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Same as Triangle.BorderMatch except with an extra triangle right after the start point
     BorderStartMatch {
         ///radius of how big the match triangle is (as a percentage of segment length)

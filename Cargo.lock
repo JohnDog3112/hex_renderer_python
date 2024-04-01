@@ -86,9 +86,9 @@ checksum = "95505c38b4572b2d910cecb0281560f54b440a19336cbbcb27bf6ce6adc6f5a8"
 
 [[package]]
 name = "hex_renderer"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86a5cf15a15c3748c4397a447e8bbc908881faefb58804ba62e8abca4b595242"
+checksum = "8815e2bc8aa05808a095b4a200cc3e0aa004973f8aabd003e8906b8370212b7b"
 dependencies = [
  "lazy_static",
  "rusttype",

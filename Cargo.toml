@@ -9,7 +9,7 @@ name = "hex_renderer_python"
 crate-type = ["cdylib"]
 
 [dependencies]
-hex_renderer = "0.2.1"
+hex_renderer = "0.2.3"
 pyo3 = { version = "0.20.0", features = ["multiple-pymethods"] }
 #serde = { version = "1.0.195", features = ["derive"] }
 #serde-pyobject = "0.2.0"

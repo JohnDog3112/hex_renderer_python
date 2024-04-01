@@ -116,15 +116,16 @@ fn py_gen_struct(args: Arguments, input: ItemStruct) -> Result<TokenStream> {
 
     let field_attrs = gen_field_attrs(&mut fields)?;
 
-    let py_methods = gen_py_methods(&ident, &mut fields, &field_attrs, &mut attrs)?;
-    
-    let semi = input.semi_token;
-    let attrs = TokenStream::from_iter(attrs.into_iter().map(|a| a.to_token_stream()));
-    
     let name = match &args.bridge {
         Some(bridge) => bridge.to_string(),
         None => ident.to_string(),
     };
+
+    let py_methods = gen_py_methods(&ident, &mut fields, &field_attrs, &mut attrs, &name)?;
+    
+    let semi = input.semi_token;
+    let attrs = TokenStream::from_iter(attrs.into_iter().map(|a| a.to_token_stream()));
+    
 
     let bridge = args.bridge.map(|bridge| {
 
@@ -161,6 +162,7 @@ fn py_gen_struct(args: Arguments, input: ItemStruct) -> Result<TokenStream> {
 
 fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
     let mut input = input;
+    let module_ident = Ident::new(&format!("{}Module", input.ident.to_string()), input.ident.span());
 
     let variant_idents = input.variants.iter().map(|variant| {
         Ident::new(&format!("{}{}", input.ident.to_string(), variant.ident.to_string()), variant.span())
@@ -180,7 +182,7 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
 
         //let field_attrs = gen_field_attrs(&mut fields)?;
 
-        let py_methods = gen_py_methods(&ident, &mut variant.fields, &field_attrs, &mut variant.attrs)?;
+        let py_methods = gen_py_methods(&ident, &mut variant.fields, &field_attrs, &mut variant.attrs, &variant.ident.to_string())?;
 
         let semi = match &variant.fields {
             Fields::Named(_) => None,
@@ -196,11 +198,11 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
             name = "None_".to_string();
         }
 
-        let inp_ident = &input.ident;
+        //let inp_ident = &input.ident;
         let vis = &input.vis;
         Ok(quote! {
             #attrs
-            #[::interface_macros::py_type_gen(nested = #inp_ident)]
+            #[::interface_macros::py_type_gen(nested = #module_ident)]
             #[::pyo3::pyclass(name = #name)]
             #vis struct #ident #fields #semi
             
@@ -305,23 +307,65 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
         Some((str, args))
     });
 
-    let py_type = py_type_str.map(|(format_str, args)| {
-        quote! {
+    let any_type_name = format!("Any{}", py_path_name.to_string());
+    let py_type = if py_type_str.is_some() {
+        Some(quote! {
             impl ::interface_macros::PyType for #ident {
+                const PATH: &'static [&'static ::core::primitive::str] = &{
+                    const PREV_PATH: &[&::core::primitive::str] = <#module_ident as ::interface_macros::PyPath>::PATH;
+                    let mut path: [&str; PREV_PATH.len()+1] = [""; PREV_PATH.len()+1];
+                    
+                    let mut i = 0;
+                    while i < PREV_PATH.len() {
+                        path[i] = PREV_PATH[i];
+                        i += 1;
+                    }
+                    path[path.len()-1] = <#module_ident as ::interface_macros::PyPath>::NAME;
+                    path
+                };
                 fn to_string() -> String {
+                    #any_type_name.to_string()
+                }
+            }
+        })
+    } else {
+        None
+    };
+
+    let decl_name = Ident::new( &format!("{}AnyDeclaration", py_path_name.to_string()), py_path_name.span());
+    
+    let decl = py_type_str.map(|(format_str, args)| {
+        let outer_fmt = format!("{} = {{}}", any_type_name.to_string());
+        quote! {
+            ::interface_macros::lazy_static! {
+                pub static ref #decl_name: String = format!(
+                    #outer_fmt,
                     format!(
                         #format_str,
                         #args
                     )
-                }
+                );
             }
         }
     });
 
-    let vis = &input.vis;
+    let py_type_gen_decl = if decl.is_some() {
+        Some(quote!(declaration = #decl_name,))
+    } else {
+        None
+    };
 
+    let vis = &input.vis;
+    let attrs: TokenStream = get_comments(&input.attrs).iter().map(|a| a.to_token_stream()).collect();
+    
     Ok(quote!{
 
+        #decl
+
+        #[::interface_macros::py_type_gen(module = #py_path_name, #py_type_gen_decl)]
+        #attrs
+        #vis struct #module_ident;
+        
         #[derive(::pyo3::FromPyObject)]
         #vis enum #ident {
             #enum_fields
@@ -337,9 +381,9 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
 
         #bridge
 
-        impl ::interface_macros::PyPath for #ident {
-            const NAME: &'static str = #py_path_name;
-        }
+        //impl ::interface_macros::PyPath for #ident {
+        //    const NAME: &'static str = #py_path_name;
+        //}
 
         #py_type
         
@@ -776,7 +820,7 @@ fn gen_field_attrs(fields: &mut Fields) -> Result<Vec<PyField>> {
         parse_field_attrs(&mut field.attrs, default_name, field_name)
     }).collect()
 }
-fn gen_py_methods(ident: &Ident, fields: &mut Fields, field_attrs: &Vec<PyField>, attrs: &mut Vec<Attribute>) -> Result<TokenStream> {
+fn gen_py_methods(ident: &Ident, fields: &mut Fields, field_attrs: &Vec<PyField>, attrs: &mut Vec<Attribute>, variant_name: &str) -> Result<TokenStream> {
 
     let comments = get_comments(attrs);
 
@@ -790,6 +834,30 @@ fn gen_py_methods(ident: &Ident, fields: &mut Fields, field_attrs: &Vec<PyField>
         gen_with(field, attrs)
     }).collect::<TokenStream>();
 
+    let rust_name_len = ident.to_string().len();
+
+    let repr = quote! {
+        #[ignore]
+        fn __repr__(&self) -> String {
+            let mut out = format!("{:?}", self);
+
+            #variant_name.to_string() + &out[#rust_name_len..]
+        }
+    };
+    let rich_cmp = quote! {
+        #[ignore]
+        fn __richcmp__(&self, other: &Self, op: ::pyo3::basic::CompareOp) -> ::pyo3::PyResult<bool> {
+            Ok(match op {
+                ::pyo3::pyclass::CompareOp::Lt => self < other,
+                ::pyo3::pyclass::CompareOp::Le => self <= other,
+                ::pyo3::pyclass::CompareOp::Eq => self == other,
+                ::pyo3::pyclass::CompareOp::Ne => self != other,
+                ::pyo3::pyclass::CompareOp::Gt => self > other,
+                ::pyo3::pyclass::CompareOp::Ge => self >= other,
+            })
+        }
+    };
+
     Ok(quote! {
         impl #ident {
             #new_func
@@ -797,6 +865,10 @@ fn gen_py_methods(ident: &Ident, fields: &mut Fields, field_attrs: &Vec<PyField>
             #getters
 
             #withs
+
+            #repr
+
+            #rich_cmp
         }
         
     })

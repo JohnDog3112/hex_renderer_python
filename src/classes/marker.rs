@@ -11,7 +11,7 @@ pub fn add_class(_py: Python, m: &PyModule) -> PyResult<()> {
 }
 
 #[py_gen(bridge = Marker)]
-#[derive(Clone)]
+#[derive(Clone, PartialEq, PartialOrd, Debug)]
 ///Specifier for how to draw a shape (not necessarily a circle)
 pub struct PyMarker {
     #[py_gen(bridge = PyColor)]

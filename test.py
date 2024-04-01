@@ -1,4 +1,4 @@
-from hex_renderer_python import GridOptions, GridPatternOptions, Point, Color, Lines, Intersections, Marker, AngleSig, PatternVariant, HexGrid
+from hex_renderer_python import GridOptions, GridPatternOptions, Point, Color, Lines, Intersections, Marker, AngleSig, PatternVariant, HexGrid, EndPoint
 
 intersections = Intersections.UniformPoints(
     point=Point.Single(
@@ -50,6 +50,8 @@ gradient = GridOptions(
     ),
 )
 
+print(gradient)
+
 
 
 patterns = [
@@ -77,6 +79,7 @@ patterns = [
 ]
 
 hex_grid = HexGrid(patterns, 50)
+
 
 hex_grid.draw_to_file("test.png", 50, gradient)
 

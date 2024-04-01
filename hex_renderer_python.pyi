@@ -1,6 +1,6 @@
 class PatternVariant(object):
 	"""
-	A hexpattern that can be rendered on a grade
+	A hexpattern that can be rendered on a grid
 	"""
 	def __init__(self, direction: str, angle_sigs: str, great_spell: None | bool = None) -> None:
 		"""
@@ -33,7 +33,7 @@ class GridOptions(object):
 	"""
 	Main struct for all pattern rendering options
 	"""
-	def __init__(self, line_thickness: float, pattern_options: GridPatternOptions.Uniform | GridPatternOptions.Changing, center_dot: Point.None_ | Point.Single | Point.Double) -> None:
+	def __init__(self, line_thickness: float, pattern_options: GridPatternOptions.AnyGridPatternOptions, center_dot: Point.AnyPoint) -> None:
 		"""
 		Main struct for all pattern rendering options
 		:param line_thickness: Thickness of line in relation to distance between points
@@ -50,31 +50,35 @@ class GridOptions(object):
 		"""
 		...
 	@property
-	def pattern_options(self) -> GridPatternOptions.Uniform | GridPatternOptions.Changing:
+	def pattern_options(self) -> GridPatternOptions.AnyGridPatternOptions:
 		"""
 		Further options for how to render each pattern
 		"""
 		...
 	@property
-	def center_dot(self) -> Point.None_ | Point.Single | Point.Double:
+	def center_dot(self) -> Point.AnyPoint:
 		"""
 		Optional point to place in the center of each pattern (helps with determining pattern size at a glance)
 		"""
 		...
 	def with_line_thickness(self, line_thickness: float) -> GridOptions:
 		...
-	def with_pattern_options(self, pattern_options: GridPatternOptions.Uniform | GridPatternOptions.Changing) -> GridOptions:
+	def with_pattern_options(self, pattern_options: GridPatternOptions.AnyGridPatternOptions) -> GridOptions:
 		...
-	def with_center_dot(self, center_dot: Point.None_ | Point.Single | Point.Double) -> GridOptions:
+	def with_center_dot(self, center_dot: Point.AnyPoint) -> GridOptions:
 		...
 	...
-class GridPatternOptions:
+class GridPatternOptions(object):
+	"""
+	Struct that holds the different variations of GridPatterns
+	"""
+	AnyGridPatternOptions = GridPatternOptions.Uniform | GridPatternOptions.Changing
 	class Changing(object):
 		"""
 		Changes what pattern renderer to use when finding an introspect or retrospect pattern
 		 That way you can change colors/renderers for embedded patterns
 		"""
-		def __init__(self, variations: list[tuple[Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle, Lines.Monocolor | Lines.Gradient | Lines.SegmentColors]], intros: list[AngleSig], retros: list[AngleSig]) -> None:
+		def __init__(self, variations: list[tuple[Intersections.AnyIntersections, Lines.AnyLines]], intros: list[AngleSig], retros: list[AngleSig]) -> None:
 			"""
 			Changes what pattern renderer to use when finding an introspect or retrospect pattern
 			 That way you can change colors/renderers for embedded patterns
@@ -84,7 +88,7 @@ class GridPatternOptions:
 			"""
 			...
 		@property
-		def variations(self) -> list[tuple[Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle, Lines.Monocolor | Lines.Gradient | Lines.SegmentColors]]:
+		def variations(self) -> list[tuple[Intersections.AnyIntersections, Lines.AnyLines]]:
 			"""
 			Variations to use, starts at the first and goes up when it reaches an intro, goes down when reaching a retro
 			"""
@@ -101,7 +105,7 @@ class GridPatternOptions:
 			Vec of angle_sigs of retro patterns
 			"""
 			...
-		def with_variations(self, variations: list[tuple[Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle, Lines.Monocolor | Lines.Gradient | Lines.SegmentColors]]) -> GridPatternOptions.Changing:
+		def with_variations(self, variations: list[tuple[Intersections.AnyIntersections, Lines.AnyLines]]) -> GridPatternOptions.Changing:
 			...
 		def with_intros(self, intros: list[AngleSig]) -> GridPatternOptions.Changing:
 			...
@@ -113,24 +117,29 @@ class GridPatternOptions:
 		Uniform means that all patterns will be rendered in the same way
 		 (This excludes the difference with PatternVariant)
 		"""
-		def __init__(self, intersections: Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle, lines: Lines.Monocolor | Lines.Gradient | Lines.SegmentColors) -> None:
+		def __init__(self, intersections: Intersections.AnyIntersections, lines: Lines.AnyLines) -> None:
 			"""
 			Uniform means that all patterns will be rendered in the same way
 			 (This excludes the difference with PatternVariant)
 			"""
 			...
 		@property
-		def intersections(self) -> Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle:
+		def intersections(self) -> Intersections.AnyIntersections:
 			...
 		@property
-		def lines(self) -> Lines.Monocolor | Lines.Gradient | Lines.SegmentColors:
+		def lines(self) -> Lines.AnyLines:
 			...
-		def with_intersections(self, intersections: Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle) -> GridPatternOptions.Uniform:
+		def with_intersections(self, intersections: Intersections.AnyIntersections) -> GridPatternOptions.Uniform:
 			...
-		def with_lines(self, lines: Lines.Monocolor | Lines.Gradient | Lines.SegmentColors) -> GridPatternOptions.Uniform:
+		def with_lines(self, lines: Lines.AnyLines) -> GridPatternOptions.Uniform:
 			...
 		...
-class EndPoint:
+	...
+class EndPoint(object):
+	"""
+	Specifier for how to draw the start and end points on a pattern
+	"""
+	AnyEndPoint = EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch
 	class BorderedMatch(object):
 		"""
 		Draw a point that matches the starting/ending color with a border
@@ -170,17 +179,18 @@ class EndPoint:
 		"""
 		Draw a normal point
 		"""
-		def __init__(self, point: Point.None_ | Point.Single | Point.Double) -> None:
+		def __init__(self, point: Point.AnyPoint) -> None:
 			"""
 			Draw a normal point
 			"""
 			...
 		@property
-		def point(self) -> Point.None_ | Point.Single | Point.Double:
+		def point(self) -> Point.AnyPoint:
 			...
-		def with_point(self, point: Point.None_ | Point.Single | Point.Double) -> EndPoint.Point:
+		def with_point(self, point: Point.AnyPoint) -> EndPoint.Point:
 			...
 		...
+	...
 class SquareGrid(Grid):
 	"""
 	Grid of fixed sized tiles where the patterns are automatically scaled to fit within.
@@ -238,12 +248,16 @@ class Grid(object):
 		"""
 		...
 	...
-class CollisionOption:
+class CollisionOption(object):
+	"""
+	Options for drawing overlapping segments (impossible patterns)
+	"""
+	AnyCollisionOption = CollisionOption.Dashes | CollisionOption.MatchedDashes | CollisionOption.ParallelLines | CollisionOption.OverloadedParallel
 	class OverloadedParallel(object):
 		"""
 		Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps
 		"""
-		def __init__(self, max_line: int, overload: OverloadOptions.Dashes | OverloadOptions.LabeledDashes | OverloadOptions.MatchedDashes) -> None:
+		def __init__(self, max_line: int, overload: OverloadOptions.AnyOverloadOptions) -> None:
 			"""
 			Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps
 			:param max_line: number of overlapping segments/lines before using the overload option
@@ -257,14 +271,14 @@ class CollisionOption:
 			"""
 			...
 		@property
-		def overload(self) -> OverloadOptions.Dashes | OverloadOptions.LabeledDashes | OverloadOptions.MatchedDashes:
+		def overload(self) -> OverloadOptions.AnyOverloadOptions:
 			"""
 			Rendering option for when reaching too many parallel lines
 			"""
 			...
 		def with_max_line(self, max_line: int) -> CollisionOption.OverloadedParallel:
 			...
-		def with_overload(self, overload: OverloadOptions.Dashes | OverloadOptions.LabeledDashes | OverloadOptions.MatchedDashes) -> CollisionOption.OverloadedParallel:
+		def with_overload(self, overload: OverloadOptions.AnyOverloadOptions) -> CollisionOption.OverloadedParallel:
 			...
 		...
 	class ParallelLines(object):
@@ -306,45 +320,50 @@ class CollisionOption:
 		def with_color(self, color: Color) -> CollisionOption.Dashes:
 			...
 		...
-class Intersections:
+	...
+class Intersections(object):
+	"""
+	How to draw all the points in a pattern, including start, end, and middle points
+	"""
+	AnyIntersections = Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle
 	class EndsAndMiddle(object):
 		"""
 		Draws a different point for the start, end, and middle
 		"""
-		def __init__(self, start: EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch, middle: Point.None_ | Point.Single | Point.Double, end: EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch) -> None:
+		def __init__(self, start: EndPoint.AnyEndPoint, middle: Point.AnyPoint, end: EndPoint.AnyEndPoint) -> None:
 			"""
 			Draws a different point for the start, end, and middle
 			"""
 			...
 		@property
-		def start(self) -> EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch:
+		def start(self) -> EndPoint.AnyEndPoint:
 			...
 		@property
-		def middle(self) -> Point.None_ | Point.Single | Point.Double:
+		def middle(self) -> Point.AnyPoint:
 			...
 		@property
-		def end(self) -> EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch:
+		def end(self) -> EndPoint.AnyEndPoint:
 			...
-		def with_start(self, start: EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch) -> Intersections.EndsAndMiddle:
+		def with_start(self, start: EndPoint.AnyEndPoint) -> Intersections.EndsAndMiddle:
 			...
-		def with_middle(self, middle: Point.None_ | Point.Single | Point.Double) -> Intersections.EndsAndMiddle:
+		def with_middle(self, middle: Point.AnyPoint) -> Intersections.EndsAndMiddle:
 			...
-		def with_end(self, end: EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch) -> Intersections.EndsAndMiddle:
+		def with_end(self, end: EndPoint.AnyEndPoint) -> Intersections.EndsAndMiddle:
 			...
 		...
 	class UniformPoints(object):
 		"""
 		Draws the same point for everything, including start and end
 		"""
-		def __init__(self, point: Point.None_ | Point.Single | Point.Double) -> None:
+		def __init__(self, point: Point.AnyPoint) -> None:
 			"""
 			Draws the same point for everything, including start and end
 			"""
 			...
 		@property
-		def point(self) -> Point.None_ | Point.Single | Point.Double:
+		def point(self) -> Point.AnyPoint:
 			...
-		def with_point(self, point: Point.None_ | Point.Single | Point.Double) -> Intersections.UniformPoints:
+		def with_point(self, point: Point.AnyPoint) -> Intersections.UniformPoints:
 			...
 		...
 	class Nothing(object):
@@ -357,6 +376,7 @@ class Intersections:
 			"""
 			...
 		...
+	...
 class AngleSig(object):
 	"""
 	Angle sigs of a pattern (ex. qqq)
@@ -375,7 +395,11 @@ class AngleSig(object):
 	def __repr__(self) -> str:
 		...
 	...
-class Point:
+class Point(object):
+	"""
+	Options for drawing points at the grid points/intersections
+	"""
+	AnyPoint = Point.None_ | Point.Single | Point.Double
 	class Double(object):
 		"""
 		Draws an inner dot dotand outer dot (or a point with a border)
@@ -433,6 +457,7 @@ class Point:
 			"""
 			...
 		...
+	...
 class Marker(object):
 	"""
 	Specifier for how to draw a shape (not necessarily a circle)
@@ -461,12 +486,13 @@ class Marker(object):
 	def with_radius(self, radius: float) -> Marker:
 		...
 	...
-class Lines:
+class Lines(object):
+	AnyLines = Lines.Monocolor | Lines.Gradient | Lines.SegmentColors
 	class SegmentColors(object):
 		"""
 		Changes colors whenever it reaches an intersection that's already had the current color
 		"""
-		def __init__(self, colors: list[Color], triangles: Triangle.None_ | Triangle.Match | Triangle.BorderMatch | Triangle.BorderStartMatch, collisions: CollisionOption.Dashes | CollisionOption.MatchedDashes | CollisionOption.ParallelLines | CollisionOption.OverloadedParallel) -> None:
+		def __init__(self, colors: list[Color], triangles: Triangle.AnyTriangle, collisions: CollisionOption.AnyCollisionOption) -> None:
 			"""
 			Changes colors whenever it reaches an intersection that's already had the current color
 			:param colors: Colors to use
@@ -481,22 +507,22 @@ class Lines:
 			"""
 			...
 		@property
-		def triangles(self) -> Triangle.None_ | Triangle.Match | Triangle.BorderMatch | Triangle.BorderStartMatch:
+		def triangles(self) -> Triangle.AnyTriangle:
 			"""
 			Arrows/Triangles to draw at the start and when switching between colors
 			"""
 			...
 		@property
-		def collisions(self) -> CollisionOption.Dashes | CollisionOption.MatchedDashes | CollisionOption.ParallelLines | CollisionOption.OverloadedParallel:
+		def collisions(self) -> CollisionOption.AnyCollisionOption:
 			"""
 			Options for impossible patterns (when you get overlapping segments)
 			"""
 			...
 		def with_colors(self, colors: list[Color]) -> Lines.SegmentColors:
 			...
-		def with_triangles(self, triangles: Triangle.None_ | Triangle.Match | Triangle.BorderMatch | Triangle.BorderStartMatch) -> Lines.SegmentColors:
+		def with_triangles(self, triangles: Triangle.AnyTriangle) -> Lines.SegmentColors:
 			...
-		def with_collisions(self, collisions: CollisionOption.Dashes | CollisionOption.MatchedDashes | CollisionOption.ParallelLines | CollisionOption.OverloadedParallel) -> Lines.SegmentColors:
+		def with_collisions(self, collisions: CollisionOption.AnyCollisionOption) -> Lines.SegmentColors:
 			...
 		...
 	class Gradient(object):
@@ -570,7 +596,12 @@ class Lines:
 		def with_bent(self, bent: bool) -> Lines.Monocolor:
 			...
 		...
-class Triangle:
+	...
+class Triangle(object):
+	"""
+	Options for drawing the triangle/arrow between color changes on the Segment Renderer
+	"""
+	AnyTriangle = Triangle.None_ | Triangle.Match | Triangle.BorderMatch | Triangle.BorderStartMatch
 	class BorderStartMatch(object):
 		"""
 		Same as Triangle.BorderMatch except with an extra triangle right after the start point
@@ -656,7 +687,12 @@ class Triangle:
 			"""
 			...
 		...
-class OverloadOptions:
+	...
+class OverloadOptions(object):
+	"""
+	Options for what to do when you get too many parallel lines
+	"""
+	AnyOverloadOptions = OverloadOptions.Dashes | OverloadOptions.LabeledDashes | OverloadOptions.MatchedDashes
 	class MatchedDashes(object):
 		"""
 		same as CollisionOption,MatchedDashes (represents them as dashes that represet each color of overlapping lines)
@@ -710,6 +746,7 @@ class OverloadOptions:
 		def with_color(self, color: Color) -> OverloadOptions.Dashes:
 			...
 		...
+	...
 class Color(object):
 	"""
 	Color struct, using RGBA

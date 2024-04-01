@@ -275,7 +275,7 @@ pub trait StaticString: Deref<Target = String> + Send + Sync {}
 impl<T> StaticString for T 
 where
     T: Deref<Target = String>,
-    T: Send + Sync  
+    T: Send + Sync
 {
     
 }
@@ -288,6 +288,7 @@ where
 
 }
 
+
 #[derive(Clone, Copy)]
 pub struct TypeProperties {
     pub name: &'static dyn StaticString,
@@ -298,6 +299,8 @@ pub struct TypeProperties {
 }
 
 
+
+#[derive(Debug)]
 pub enum PyFuncType {
     Normal,
     Property,
@@ -371,10 +374,11 @@ pub struct PyImpl {
     typ: TypeProperties,
     funcs: &'static [&'static PyFunc],
 }
+
 pub enum StoredPyTypes {
     Fn(PyFunc),
     Impl(PyImpl),
-    Class(TypeProperties, &'static [&'static str]) 
+    Class(TypeProperties, &'static [&'static str], &'static [&'static dyn StaticString]) ,
 }
 
 impl StoredPyTypes {
@@ -400,16 +404,17 @@ impl StoredPyTypes {
         )
     }
 
-    pub const fn new_class(typ: TypeProperties, comments: &'static [&'static str]) -> Self {
-        Self::Class(typ, comments)
+    pub const fn new_class(typ: TypeProperties, comments: &'static [&'static str], declarations: &'static [&'static dyn StaticString]) -> Self {
+        Self::Class(typ, comments, declarations)
     } 
 }
 
-struct OrderedHashMap<T: Clone + Hash + Eq, U> {
+#[derive(Clone)]
+struct OrderedHashMap<T: Clone + Hash + Eq, U: Clone> {
     key_order: Vec<T>,
     hash_map: HashMap<T, U>
 }
-impl<T: Clone + Hash + Eq, U> OrderedHashMap<T, U> {
+impl<T: Clone + Hash + Eq, U: Clone> OrderedHashMap<T, U> {
     fn new() -> Self {
         Self {
             key_order: Vec::new(),
@@ -454,7 +459,7 @@ impl<T: Clone + Hash + Eq, U> OrderedHashMap<T, U> {
 
 }
 
-impl<T: Clone + Hash + Eq, U> IntoIterator for OrderedHashMap<T, U> {
+impl<T: Clone + Hash + Eq, U: Clone> IntoIterator for OrderedHashMap<T, U> {
     type Item = (T, U);
 
     type IntoIter = std::vec::IntoIter<Self::Item>;
@@ -466,16 +471,17 @@ impl<T: Clone + Hash + Eq, U> IntoIterator for OrderedHashMap<T, U> {
         }).collect::<Vec<(T, U)>>()
             .into_iter()
     }
-
-    
 }
 
+
+#[derive(Clone)]
 enum PyTreeNode {
     Path(OrderedHashMap<String, PyTreeNode>),
     Class {
         extends: String,
         typ: TypeProperties,
         inner: OrderedHashMap<String, PyTreeNode>,
+        declarations: &'static [&'static dyn StaticString],
         comments: &'static [&'static str],
     },
     Func(&'static PyFunc)
@@ -486,7 +492,7 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
     if !path.is_empty() {
         if let Some(path_node) = map.get_mut(path[0]) {
             match path_node {
-                PyTreeNode::Class { extends:_, typ: _, inner, comments: _ }
+                PyTreeNode::Class { extends:_, typ: _, inner, declarations: _, comments: _ }
                 | PyTreeNode::Path(inner) => {
                     add_to_path(inner, node, &path[1..]);
                 },
@@ -501,7 +507,7 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
     }
     match node {
         StoredPyTypes::Fn(_) => todo!(),
-        StoredPyTypes::Class(class, comments) => {
+        StoredPyTypes::Class(class, comments, declarations) => {
             if let Some(mut exist) = map.remove(&class.name.deref()[..]) {
                 match exist {
                     PyTreeNode::Path(inner) => {
@@ -509,16 +515,18 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
                             extends: class.extend.deref().clone(),
                             typ: class.clone(),
                             inner,
+                            declarations,
                             comments
                         });
                     },
-                    PyTreeNode::Class { extends:_, typ, inner:_, comments: _ } => {
+                    PyTreeNode::Class { extends:_, typ, inner:_, comments: _, declarations: _ } => {
                         //std::any::Any::type_id(*class)
                         if typ.type_id.deref() != class.type_id.deref() {
                             panic!("`{}` already exists!", class.name.deref());
                         }
-                        if let PyTreeNode::Class {extends: _, typ: _, inner: _, comments: old_comments} = &mut exist {
-                            *old_comments = comments
+                        if let PyTreeNode::Class {extends: _, typ: _, inner: _, comments: old_comments, declarations: old_declarations} = &mut exist {
+                            *old_comments = comments;
+                            *old_declarations = declarations;
                         }
                         map.insert(class.name.deref().clone(), exist);
                     },
@@ -530,19 +538,23 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
                 extends: class.extend.deref().clone(),
                 typ: *class,
                 inner: OrderedHashMap::new(),
+                declarations,
                 comments
             });
         }
         StoredPyTypes::Impl(imp) => {
             let mut new_comments: &[&str] = &[];
+            let mut declarations: &'static [&'static dyn StaticString] = &[];
             let mut inner = if let Some(node) = map.remove(&imp.typ.name.deref()[..]) {
                 match node {
                     PyTreeNode::Path(inner) => {
+                        //declarations = &[];
                         inner
                     },
-                    PyTreeNode::Class { extends:_, typ, inner, comments } => {
+                    PyTreeNode::Class { extends:_, typ, inner, comments, declarations: old_declarations } => {
                         if typ.type_id.deref() == imp.typ.type_id.deref() {
                             new_comments = comments;
+                            declarations = old_declarations;
                             inner
                         } else {
                             panic!("Two definitions of class!")
@@ -554,6 +566,7 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
                 OrderedHashMap::new()
             };
 
+
             for func in imp.funcs {
                 //eprintln!("func: {}", func.name.to_string());
                 inner.insert(func.name.to_string(), PyTreeNode::Func(*func));
@@ -562,6 +575,7 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
                 extends: imp.typ.extend.deref().clone(),
                 typ: imp.typ.clone(),
                 inner,
+                declarations,
                 comments: new_comments
             });
         },
@@ -575,7 +589,7 @@ fn add_node(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static StoredP
         StoredPyTypes::Impl(imp) => {
             add_to_path(map, node, imp.typ.path)
         },
-        StoredPyTypes::Class(class, _comments) => {
+        StoredPyTypes::Class(class, _comments, _declarations) => {
             add_to_path(map, node, class.path)
         }
     }
@@ -596,7 +610,7 @@ fn nodes_to_string(map: OrderedHashMap<String, PyTreeNode>) -> Vec<String> {
                     }
                 }
             },
-            PyTreeNode::Class { extends, typ: _, inner, comments } => {
+            PyTreeNode::Class { extends, typ: _, inner, comments, declarations } => {
                 collected.push(format!("class {name}({extends}):"));
 
                 if comments.len() != 0 {
@@ -605,6 +619,9 @@ fn nodes_to_string(map: OrderedHashMap<String, PyTreeNode>) -> Vec<String> {
                         collected.push(format!("\t{comment}"));
                     }
                     collected.push("\t\"\"\"".to_string());
+                }
+                for decl in declarations {
+                    collected.push(format!("\t{}", decl.to_string()));
                 }
 
                 for sub_str in nodes_to_string(inner) {
@@ -622,13 +639,54 @@ fn nodes_to_string(map: OrderedHashMap<String, PyTreeNode>) -> Vec<String> {
 
     collected
 }
-pub fn collect_stored_types() -> String {
+
+
+fn declare_declerations(map: OrderedHashMap<String, PyTreeNode>, path: Vec<String>, out: &mut Vec<String>) {
+    //println!("{}{}", "\t".repeat(path.len()) ,path.join("."));
+    for (key, val) in map {
+        match val {
+            PyTreeNode::Path(inner) => {
+                let mut next_path = path.clone();
+                next_path.push(key.clone());
+                declare_declerations(inner, next_path, out);
+            },
+            PyTreeNode::Class { extends: _, typ: _, inner, declarations, comments: _ } => {
+                //println!("outer path {key}: {}", path.join("."));
+                    //println!("outer path {key}: {}", path.join("."));
+                
+                for decl in declarations {
+                    //println!("{}inner path {key}: {}", "\t".repeat(path.len()+1), path.join("."));
+                    if path.is_empty() {
+                        out.push(format!("{key}.{}", decl.to_string()));
+                    } else {
+                        out.push(format!("{key}.{}.{}", path.join("."), decl.to_string()));
+                    }
+                    
+                }
+                let mut next_path = path.clone();
+                next_path.push(key.clone());
+                declare_declerations(inner, next_path, out);
+            },
+            PyTreeNode::Func(_) => (),
+        }
+    }
+
+}
+pub fn collect_stored_types() -> (String, String) {
     let mut map = OrderedHashMap::new();
     for py_type in inventory::iter::<StoredPyTypes> {
         add_node(&mut map, py_type);
     }
 
-    nodes_to_string(map).join("\n")
+    let mut declarations = Vec::new();
+    declare_declerations(map.clone(), Vec::new(), &mut declarations);
+
+    let declarations = declarations.join("\n");
+
+    (
+        nodes_to_string(map).join("\n"),
+        declarations
+    )
 }
 
 inventory::collect!(StoredPyTypes);

@@ -18,7 +18,7 @@ pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
 #[derive(Clone)]
 ///Struct that holds the different variations of GridPatterns
 pub enum PyGridPatternOptions {
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Uniform means that all patterns will be rendered in the same way
     /// (This excludes the difference with PatternVariant)
     Uniform (
@@ -27,7 +27,7 @@ pub enum PyGridPatternOptions {
         #[py_gen(name = "lines", bridge = PyLines)]
         Lines
     ),
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Changes what pattern renderer to use when finding an introspect or retrospect pattern
     /// That way you can change colors/renderers for embedded patterns
     Changing {

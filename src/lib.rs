@@ -1,4 +1,5 @@
-use hex_renderer::pattern_utils::Angle;
+use hex_renderer::{pattern_utils::Angle, options::Color};
+use interface_macros::py_gen;
 use pyo3::{pymodule, Python, types::PyModule, PyResult};
 
 pub mod classes;
@@ -15,6 +16,7 @@ fn hex_renderer_python(py: Python, m: &PyModule) -> PyResult<()> {
     classes::collision_option::add_class(py, m)?;
     classes::lines::add_class(py, m)?;
 
+
     m.add_class::<classes::angle_sig::AngleSig>()?;
 
     classes::grid_pattern_options::add_class(py, m)?;
@@ -27,6 +29,31 @@ fn hex_renderer_python(py: Python, m: &PyModule) -> PyResult<()> {
 
     Ok(())
 }
+
+
+/*#[::pyo3::pyclass]
+#[derive(Debug, PartialEq, PartialOrd)]
+struct Test {
+    f: f32
+}
+
+#[::pyo3::pymethods]
+impl Test {
+    fn __repr__(&self) -> String {
+        format!("{:?}", self)
+    }
+
+    fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> PyResult<bool> {
+        Ok(match op {
+            pyo3::pyclass::CompareOp::Lt => self < other,
+            pyo3::pyclass::CompareOp::Le => self <= other,
+            pyo3::pyclass::CompareOp::Eq => self == other,
+            pyo3::pyclass::CompareOp::Ne => self != other,
+            pyo3::pyclass::CompareOp::Gt => self > other,
+            pyo3::pyclass::CompareOp::Ge => self >= other,
+        })
+    }
+}*/
 
 
 #[allow(clippy::ptr_arg)]
@@ -47,13 +74,25 @@ fn angles_to_string(inp: &Vec<Angle>) -> String {
 pub mod tests {
     use std::{fs::File, io::Write};
 
+    const INIT_PY: &str = "
+from .hex_renderer_python import *
 
+__doc__ = hex_renderer_python.__doc__
+if hasattr(hex_renderer_python, \"__all__\"):
+    __all__ = hex_renderer_python.__all__
+
+";
 
     #[test]
     fn print_stuffs() -> std::io::Result<()> {
-        let types = ::interface_macros::collect_stored_types();
-        let mut file = File::create("hex_renderer_python.pyi")?;
+        let (types, declarations) = ::interface_macros::collect_stored_types();
+        let mut file = File::create("hex_renderer_python/__init__.pyi")?;
         file.write_all(types.as_bytes())?;
+
+        let mut init_file = File::create("hex_renderer_python/__init__.py")?;
+        init_file.write_all(INIT_PY.as_bytes())?;
+        init_file.write_all(declarations.as_bytes())?;
+
         Ok(())
     }
 }

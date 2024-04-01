@@ -19,17 +19,17 @@ pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
 #[derive(Clone)]
 ///Options for drawing points at the grid points/intersections
 pub enum PyPoint {
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Doesn't draw any points
     None,
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draws a single dot
     Single(
         #[py_gen(name = "marker", bridge = PyMarker)]
         ///Marker specifying radius and color of point
         Marker
     ),
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Draws an inner dot dotand outer dot (or a point with a border)
     Double { 
         #[py_gen(bridge = PyMarker)]

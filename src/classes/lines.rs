@@ -18,7 +18,7 @@ pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
 #[py_gen(bridge = Lines)]
 #[derive(Clone)]
 pub enum PyLines {
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Monocolor draws the lines in a single color
     /// if bent = true, the corners will bend on the intersections
     Monocolor {
@@ -28,7 +28,7 @@ pub enum PyLines {
         ///Whether or not it bends at intersection points
         bent: bool
     },
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Gradient slowly switches between colors (gradient)
     Gradient {
         #[py_gen(bridge = Vec<PyColor>)]
@@ -43,7 +43,7 @@ pub enum PyLines {
         ///Whether or not to have the segments bend around corners
         bent: bool
     },
-    #[derive(Clone)]
+    #[derive(Clone, PartialEq, PartialOrd, Debug)]
     ///Changes colors whenever it reaches an intersection that's already had the current color
     SegmentColors {
         #[py_gen(bridge = Vec<PyColor>)]
