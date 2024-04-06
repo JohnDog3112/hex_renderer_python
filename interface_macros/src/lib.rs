@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, HashSet}, marker::PhantomData, ops::Deref, any::TypeId, hash::Hash, borrow::Borrow};
+use std::{collections::{HashMap, HashSet}, marker::PhantomData, any::TypeId, hash::Hash, borrow::Borrow};
 
 pub use interface_macros_impl::py_gen;
 pub use interface_macros_impl::py_type_gen;
@@ -773,50 +773,101 @@ fn declare_declerations(map: OrderedHashMap<String, PyTreeNode>, path: Vec<Strin
 
 }
 
-fn generate_docs(map: OrderedHashMap<String, PyTreeNode>, root: bool) -> Vec<String> {
-    let mut out = vec![];
-    let tab = "  ";
-    for (key, val) in map {
+const TAB: &str = "  ";
+pub struct DocModule {
+    pub comments: &'static [&'static str],
+    pub sub_modules: HashMap<String, DocModule>,
+    pub inner: Vec<String>
+}
+fn generate_docs(map: OrderedHashMap<String, PyTreeNode>, root: bool) -> DocModule {
+    let mut out = DocModule {
+        comments: &[],
+        sub_modules: HashMap::new(),
+        inner: Vec::new()
+    };
+    //let mut module_out
+
+    fn push_comments(comments: &[&str], out: &mut Vec<String>) {
+        for comment in comments {
+            out.push(format!("{TAB}{}", comment.trim()));
+            out.push("".to_string());
+        }
+    }
+
+    fn push_unions(unions: &[(&str, &[TypeProperties])], out: &mut Vec<String>) {
+        for (name, parts) in unions {
+            out.push(format!("{TAB}.. py:class:: {name}"));
+            out.push("".to_string());
+
+            let parts_str = parts.iter()
+                .map(|part| {
+                    format!(":py:class:`{}`", (part.name_path)())
+                }).collect::<Vec<String>>()
+                .join(" | ");
+            
+            out.push(format!("{TAB}{TAB} TypeUnion defined as {name} = {parts_str}"));
+            out.push("".to_string());
+        }
+    }
+
+
+    fn parse_item(key: String, val: PyTreeNode, root: bool, out: &mut DocModule) {
         match val {
             PyTreeNode::Path(path) => {
-                out.push(format!(".. py:class:: {key}(object)"));
-                out.push("".to_string());
+                out.inner.push(format!(".. py:class:: {key}(object)"));
+                out.inner.push("".to_string());
 
                 let nested = generate_docs(path, false);
-                for item in nested {
-                    out.push(format!("{tab}{item}"));
+                for item in nested.inner {
+                    out.inner.push(format!("{TAB}{item}"));
                 }
-                out.push("".to_string());
+                out.inner.push("".to_string());
             },
             PyTreeNode::Class { extends, typ:_, inner, declarations:_, comments, unions } => {
-                out.push(format!(".. py:class:: {key}({extends})"));
-                out.push("".to_string());
-
-                for comment in comments {
-                    out.push(format!("{tab}{}", comment.trim()));
+                if extends != "object" {
+                    out.inner.push(format!(".. py:class:: {key}(parent: {extends})"));
+                } else {
+                    out.inner.push(format!(".. py:class:: {key}"));
                 }
-                out.push("".to_string());
+                
+                out.inner.push("".to_string());
+
+                push_comments(comments, &mut out.inner);
+                
+                out.inner.push("".to_string());
+
+                push_unions(unions, &mut out.inner);
 
                 let nested = generate_docs(inner, false);
-                for item in nested {
-                    out.push(format!("{tab}{item}"));
+                for item in nested.inner {
+                    out.inner.push(format!("{TAB}{item}"));
                 }
-                out.push("".to_string());
+                out.inner.push("".to_string());
             },
             PyTreeNode::Module { typ:_, inner, declarations:_, comments, unions } => {
-                out.push(format!(".. py:module:: {key}"));
-                out.push("".to_string());
+                let mut inner_out = vec![];
+                inner_out.push(format!(".. py:module:: {key}"));
+                inner_out.push("".to_string());
 
-                for comment in comments {
-                    out.push(format!("{tab}{}", comment.trim()));
-                }
-                out.push("".to_string());
+                push_comments(comments, &mut inner_out);
 
-                let nested = generate_docs(inner, false);
-                for item in nested {
-                    out.push(format!("{tab}{item}"));
+                inner_out.push("".to_string());
+
+                
+                push_unions(unions, &mut inner_out);
+
+                //push_nested(inner, out);
+                let mut nested = generate_docs(inner, false);
+                nested.comments = comments;
+
+                ::std::mem::swap(&mut inner_out, &mut nested.inner);
+                for item in inner_out {
+                    nested.inner.push(format!("{TAB}{item}"));
                 }
-                out.push("".to_string());
+                
+                out.sub_modules.insert(key.clone(), nested);
+
+                //out.inner.push("".to_string());
             },
             PyTreeNode::Func(func) => {
                 let args = func.args.iter().filter_map(|(name, typ, typ_id)| {
@@ -828,9 +879,9 @@ fn generate_docs(map: OrderedHashMap<String, PyTreeNode>, root: bool) -> Vec<Str
                 }).collect::<Vec<String>>();
 
                 if root {
-                    out.push(format!(".. py:function:: {}({})", func.name, args.join(", ")))
+                    out.inner.push(format!(".. py:function:: {}({})", func.name, args.join(", ")))
                 } else {
-                    out.push(
+                    out.inner.push(
                         format!(
                             ".. py:method:: {}({})", 
                             func.name, 
@@ -842,20 +893,35 @@ fn generate_docs(map: OrderedHashMap<String, PyTreeNode>, root: bool) -> Vec<Str
                         )
                     );
                 }
-                out.push("".to_string());
+                out.inner.push("".to_string());
                 
-                for comment in func.comments {
-                    out.push(format!("{tab}{}", comment.trim()));
-                }
-                out.push("".to_string());
+                push_comments(func.comments, &mut out.inner);
+                out.inner.push("".to_string());
 
             },
         }
     }
 
+    //first pass, non-modules
+    let map = map.into_iter().filter_map(|(key, val)| {
+        match &val {
+            PyTreeNode::Path(_)
+            | PyTreeNode::Class { extends:_, typ:_, inner:_, declarations:_, comments:_, unions:_ }
+            | PyTreeNode::Func(_) => {
+                parse_item(key, val, root, &mut out);
+                None
+            },
+            PyTreeNode::Module { typ:_, inner:_, declarations:_, comments:_, unions:_ } => Some((key, val)),
+        }
+    }).collect::<Vec<(String, PyTreeNode)>>();
+
+    for (key, val) in map {
+        parse_item(key, val, root, &mut out);
+    }
+
     out
 }
-pub fn collect_stored_types() -> (String, String) {
+pub fn collect_stored_types() -> (String, String, DocModule) {
     let mut map = OrderedHashMap::new();
     for py_type in inventory::iter::<StoredPyTypes> {
         add_node(&mut map, py_type);
@@ -866,13 +932,14 @@ pub fn collect_stored_types() -> (String, String) {
 
     let declarations = declarations.join("\n");
 
-    let docs = generate_docs(map.clone(), true).join("\n");
-    println!("------------------- docs --------------");
-    println!("{docs}");
-
+    let docs = generate_docs(map.clone(), true);
+    //println!("------------------- docs --------------");
+    //println!("{docs}");
+    
     (
         nodes_to_string(map).join("\n"),
-        declarations
+        declarations,
+        docs
     )
 }
 

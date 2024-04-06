@@ -96,7 +96,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "hex_renderer_python"
+name = "hex_renderer_py"
 version = "0.1.0"
 dependencies = [
  "hex_renderer",

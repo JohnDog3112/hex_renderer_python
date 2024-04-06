@@ -10,4 +10,14 @@ To build, simply create a new virtual environment and run
 maturin develop
 ```
 
-Then import it in python. It's package is named hex_renderer_python.
+To build the doc site,
+```
+pip install -e '.[dev]'
+cd docs
+make html
+```
+
+# Installation
+```
+pip install hex_renderer_py
+```

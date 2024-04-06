@@ -1,4 +1,4 @@
-from hex_renderer_python import GridOptions, GridPatternOptions, Point, Color, Lines, Intersections, Marker, AngleSig, PatternVariant, HexGrid, EndPoint
+from hex_renderer_py import GridOptions, GridPatternOptions, Point, Color, Lines, Intersections, Marker, AngleSig, PatternVariant, HexGrid, EndPoint
 
 intersections = Intersections.UniformPoints(
     point=Point.Single(

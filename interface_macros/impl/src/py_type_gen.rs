@@ -320,7 +320,7 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
             const NAME: &'static str = #py_path_name;
         }
 
-        //#[cfg(test)]
+        #[cfg(test)]
         ::interface_macros::inventory::submit! {
             ::interface_macros::StoredPyTypes::#new_function(
                 #properties,
