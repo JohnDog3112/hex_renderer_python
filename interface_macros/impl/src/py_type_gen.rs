@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use proc_macro2::{TokenStream, TokenTree};
 use quote::{quote, ToTokens};
-use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType, Pat, LitStr, Attribute, ItemStruct, ItemImpl, FnArg, Expr, Lit, Token};
+use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType, Pat, LitStr, Attribute, ItemStruct, ItemImpl, FnArg, Expr, Lit};
 
 use crate::TypeArgs;
 
@@ -134,18 +134,8 @@ fn type_fn(_args: TypeArgs, input: ItemFn) -> Result<TokenStream> {
         quote! {
             (
                 #name,
-                {
-                    ::interface_macros::lazy_static! {
-                        pub static ref TYP: String = <#ty as ::interface_macros::PyType>::path_string();
-                    }
-                    &TYP
-                },
-                {
-                    ::interface_macros::lazy_static! {
-                        pub static ref TYPE_ID: ::std::any::TypeId = std::any::TypeId::of::<#ty>();
-                    }
-                    &TYPE_ID
-                }
+                &<#ty as ::interface_macros::PyType>::path_string,
+                &std::any::TypeId::of::<#ty>
             ),
         }
     }).collect::<TokenStream>();
@@ -227,12 +217,7 @@ fn type_fn(_args: TypeArgs, input: ItemFn) -> Result<TokenStream> {
                 #name,
                 &[#doc_comments],
                 &[#arg_types],
-                {
-                    ::interface_macros::lazy_static!{
-                        pub static ref RET: String = <#ret as ::interface_macros::PyType>::path_string();
-                    }
-                    &RET
-                },
+                &<#ret as ::interface_macros::PyType>::path_string,
                 false
             )
         }
@@ -510,19 +495,9 @@ fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
                 to_check.push(ty.clone());
                 quote!{
                     (
-                        #name, 
-                        {
-                            ::interface_macros::lazy_static! {
-                                pub static ref TYP: String = <#ty as ::interface_macros::PyType>::path_string();
-                            }
-                            &TYP
-                        },
-                        {
-                            ::interface_macros::lazy_static! {
-                                pub static ref TYPE_ID: ::std::any::TypeId = std::any::TypeId::of::<#ty>();
-                            }
-                            &TYPE_ID
-                        }
+                        #name,
+                        &<#ty as ::interface_macros::PyType>::path_string,
+                        &std::any::TypeId::of::<#ty>
                     ),
                 }
             }).collect::<TokenStream>()
@@ -559,12 +534,7 @@ fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
                 name: #name,
                 comments: &[#doc_comments],
                 args: &[#args],
-                ret: {
-                    ::interface_macros::lazy_static! {
-                        pub static ref RET: String = <#ret as ::interface_macros::PyType>::path_string();
-                    }
-                    &RET
-                },
+                ret: &<#ret as ::interface_macros::PyType>::path_string,
                 slf: #slf,
                 typ: #typ
             },
@@ -597,32 +567,11 @@ fn type_impl(_args: TypeArgs, input: ItemImpl) -> Result<TokenStream> {
 fn setup_type_properties<T: ToTokens>(item: &T) -> TokenStream {
     quote! {
         ::interface_macros::TypeProperties {
-            name: {
-                ::interface_macros::lazy_static!{
-                    pub static ref NAME: String = <#item as ::interface_macros::PyType>::to_string();
-                }
-                &NAME
-            },
-            name_path: {
-                ::interface_macros::lazy_static!{
-                    pub static ref NAME_PATH: String = <#item as ::interface_macros::PyType>::path_string();
-                }
-                &NAME_PATH
-            },
-            extend: {
-                ::interface_macros::lazy_static!{
-                    pub static ref EXTEND: String = <#item as ::interface_macros::PyType>::extend_string();
-                }
-                &EXTEND
-            },
+            name: &<#item as ::interface_macros::PyType>::to_string,
+            name_path: &<#item as ::interface_macros::PyType>::path_string,
+            extend: &<#item as ::interface_macros::PyType>::extend_string,
             path: <#item as ::interface_macros::PyType>::PATH,
-            type_id: {
-                ::interface_macros::lazy_static!{
-                    pub static ref TYPE_ID: ::std::any::TypeId = ::std::any::TypeId::of::<#item>();
-                }
-                &TYPE_ID
-            }
-
+            type_id: &::std::any::TypeId::of::<#item>
         }
     }
 }

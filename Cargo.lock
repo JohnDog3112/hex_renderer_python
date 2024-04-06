@@ -116,7 +116,6 @@ version = "0.1.0"
 dependencies = [
  "interface_macros_impl",
  "inventory",
- "lazy_static",
  "pyo3",
 ]
 

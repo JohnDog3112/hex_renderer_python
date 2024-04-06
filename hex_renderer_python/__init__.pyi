@@ -1,200 +1,40 @@
-class AngleSig(object):
+class GridOptions(object):
 	"""
-	Angle sigs of a pattern (ex. qqq)
+	Main struct for all pattern rendering options
 	"""
-	def __init__(self, sigs: str) -> None:
+	def __init__(self, line_thickness: float, pattern_options: GridPatternOptions.AnyGridPatternOptions, center_dot: Point.AnyPoint) -> None:
 		"""
-		Make a new angle sig
-		 :param sigs: String of sigs (ex. qqq)
-		"""
-		...
-	def get_sigs(self) -> str:
-		"""
-		 gets the sigs as a string
-		"""
-		...
-	def __repr__(self) -> str:
-		...
-	...
-class OverloadOptions:
-	"""
-	Options for what to do when you get too many parallel lines
-	"""
-	AnyOverloadOptions = OverloadOptions.Dashes | OverloadOptions.LabeledDashes | OverloadOptions.MatchedDashes
-	class MatchedDashes(object):
-		"""
-		same as CollisionOption,MatchedDashes (represents them as dashes that represet each color of overlapping lines)
-		"""
-		def __init__(self) -> None:
-			"""
-			same as CollisionOption,MatchedDashes (represents them as dashes that represet each color of overlapping lines)
-			"""
-			...
-		...
-	class LabeledDashes(object):
-		"""
-		Similar to OverloadOptions.Dashes except it includes a label with the number of overlapping lines
-		"""
-		def __init__(self, color: Color, label: Marker) -> None:
-			"""
-			Similar to OverloadOptions.Dashes except it includes a label with the number of overlapping lines
-			:param color: Color to draw the dashes with
-			:param label: marker for size and color to draw the label
-			"""
-			...
-		@property
-		def color(self) -> Color:
-			"""
-			Color to draw the dashes with
-			"""
-			...
-		@property
-		def label(self) -> Marker:
-			"""
-			marker for size and color to draw the label
-			"""
-			...
-		def with_color(self, color: Color) -> OverloadOptions.LabeledDashes:
-			...
-		def with_label(self, label: Marker) -> OverloadOptions.LabeledDashes:
-			...
-		...
-	class Dashes(object):
-		"""
-		same as CollisionOption.Dashes (just draws dashes of the given color over the first line)
-		"""
-		def __init__(self, color: Color) -> None:
-			"""
-			same as CollisionOption.Dashes (just draws dashes of the given color over the first line)
-			"""
-			...
-		@property
-		def color(self) -> Color:
-			...
-		def with_color(self, color: Color) -> OverloadOptions.Dashes:
-			...
-		...
-	...
-class PatternVariant(object):
-	"""
-	A hexpattern that can be rendered on a grid
-	"""
-	def __init__(self, direction: str, angle_sigs: str, great_spell: None | bool = None) -> None:
-		"""
-		Creates a new PatternVariant
-		 :param direction: Starting direction (North_East, East, South_East, South_West, West, North_West)
-		 :param angle_sigs: String of angle sigs (accepted characters: [q,w,e,d,s,a])
-		 :param great_spell: Whether or not it's a great spell (Default = false)
+		Main struct for all pattern rendering options
+		:param line_thickness: Thickness of line in relation to distance between points
+		:param pattern_options: Further options for how to render each pattern
+		:param center_dot: Optional point to place in the center of each pattern (helps with determining pattern size at a glance)
 		"""
 		...
 	@property
-	def direction(self) -> str:
+	def line_thickness(self) -> float:
 		"""
-		Gets the starting direction of the pattern 
-		"""
-		...
-	@property
-	def angle_sigs(self) -> str:
-		"""
-		Gets the angle_sigs of the pattern
+		Thickness of line in relation to distance between points
+		 eg. if the line_thickness = 0.1, and the distance between points is 10 pixels,
+		 then the line_thickness would be 1 pixel
 		"""
 		...
 	@property
-	def great_spell(self) -> bool:
+	def pattern_options(self) -> GridPatternOptions.AnyGridPatternOptions:
 		"""
-		Gets whether or not the pattern is a great spell
+		Further options for how to render each pattern
 		"""
 		...
-	...
-class Triangle:
-	"""
-	Options for drawing the triangle/arrow between color changes on the Segment Renderer
-	"""
-	AnyTriangle = Triangle.None_ | Triangle.Match | Triangle.BorderMatch | Triangle.BorderStartMatch
-	class BorderStartMatch(object):
+	@property
+	def center_dot(self) -> Point.AnyPoint:
 		"""
-		Same as Triangle.BorderMatch except with an extra triangle right after the start point
+		Optional point to place in the center of each pattern (helps with determining pattern size at a glance)
 		"""
-		def __init__(self, match_radius: float, border: Marker) -> None:
-			"""
-			Same as Triangle.BorderMatch except with an extra triangle right after the start point
-			:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
-			:param border: a Marker for the border
-			"""
-			...
-		@property
-		def match_radius(self) -> float:
-			"""
-			radius of how big the match triangle is (as a percentage of segment length)
-			"""
-			...
-		@property
-		def border(self) -> Marker:
-			"""
-			a Marker for the border
-			"""
-			...
-		def with_match_radius(self, match_radius: float) -> Triangle.BorderStartMatch:
-			...
-		def with_border(self, border: Marker) -> Triangle.BorderStartMatch:
-			...
 		...
-	class BorderMatch(object):
-		"""
-		Same as Triangle.Match except with an extra border around it
-		"""
-		def __init__(self, match_radius: float, border: Marker) -> None:
-			"""
-			Same as Triangle.Match except with an extra border around it
-			:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
-			:param border: a Marker for the border
-			"""
-			...
-		@property
-		def match_radius(self) -> float:
-			"""
-			radius of how big the match triangle is (as a percentage of segment length)
-			"""
-			...
-		@property
-		def border(self) -> Marker:
-			"""
-			a Marker for the border
-			"""
-			...
-		def with_match_radius(self, match_radius: float) -> Triangle.BorderMatch:
-			...
-		def with_border(self, border: Marker) -> Triangle.BorderMatch:
-			...
+	def with_line_thickness(self, line_thickness: float) -> GridOptions:
 		...
-	class Match(object):
-		"""
-		Match the color of the line
-		"""
-		def __init__(self, radius: float) -> None:
-			"""
-			Match the color of the line
-			:param radius: radius is how big it is (as a percentage of segment length)
-			"""
-			...
-		@property
-		def radius(self) -> float:
-			"""
-			radius is how big it is (as a percentage of segment length)
-			"""
-			...
-		def with_radius(self, radius: float) -> Triangle.Match:
-			...
+	def with_pattern_options(self, pattern_options: GridPatternOptions.AnyGridPatternOptions) -> GridOptions:
 		...
-	class None_(object):
-		"""
-		None, simply don't draw them
-		"""
-		def __init__(self) -> None:
-			"""
-			None, simply don't draw them
-			"""
-			...
+	def with_center_dot(self, center_dot: Point.AnyPoint) -> GridOptions:
 		...
 	...
 class Marker(object):
@@ -292,6 +132,166 @@ class GridPatternOptions:
 			...
 		...
 	...
+class PatternVariant(object):
+	"""
+	A hexpattern that can be rendered on a grid
+	"""
+	def __init__(self, direction: str, angle_sigs: str, great_spell: None | bool = None) -> None:
+		"""
+		Creates a new PatternVariant
+		 :param direction: Starting direction (North_East, East, South_East, South_West, West, North_West)
+		 :param angle_sigs: String of angle sigs (accepted characters: [q,w,e,d,s,a])
+		 :param great_spell: Whether or not it's a great spell (Default = false)
+		"""
+		...
+	@property
+	def direction(self) -> str:
+		"""
+		Gets the starting direction of the pattern 
+		"""
+		...
+	@property
+	def angle_sigs(self) -> str:
+		"""
+		Gets the angle_sigs of the pattern
+		"""
+		...
+	@property
+	def great_spell(self) -> bool:
+		"""
+		Gets whether or not the pattern is a great spell
+		"""
+		...
+	...
+class Intersections:
+	"""
+	How to draw all the points in a pattern, including start, end, and middle points
+	"""
+	AnyIntersections = Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle
+	class EndsAndMiddle(object):
+		"""
+		Draws a different point for the start, end, and middle
+		"""
+		def __init__(self, start: EndPoint.AnyEndPoint, middle: Point.AnyPoint, end: EndPoint.AnyEndPoint) -> None:
+			"""
+			Draws a different point for the start, end, and middle
+			"""
+			...
+		@property
+		def start(self) -> EndPoint.AnyEndPoint:
+			...
+		@property
+		def middle(self) -> Point.AnyPoint:
+			...
+		@property
+		def end(self) -> EndPoint.AnyEndPoint:
+			...
+		def with_start(self, start: EndPoint.AnyEndPoint) -> Intersections.EndsAndMiddle:
+			...
+		def with_middle(self, middle: Point.AnyPoint) -> Intersections.EndsAndMiddle:
+			...
+		def with_end(self, end: EndPoint.AnyEndPoint) -> Intersections.EndsAndMiddle:
+			...
+		...
+	class UniformPoints(object):
+		"""
+		Draws the same point for everything, including start and end
+		"""
+		def __init__(self, point: Point.AnyPoint) -> None:
+			"""
+			Draws the same point for everything, including start and end
+			"""
+			...
+		@property
+		def point(self) -> Point.AnyPoint:
+			...
+		def with_point(self, point: Point.AnyPoint) -> Intersections.UniformPoints:
+			...
+		...
+	class Nothing(object):
+		"""
+		Doesn't draw any points
+		"""
+		def __init__(self) -> None:
+			"""
+			Doesn't draw any points
+			"""
+			...
+		...
+	...
+class CollisionOption:
+	"""
+	Options for drawing overlapping segments (impossible patterns)
+	"""
+	AnyCollisionOption = CollisionOption.Dashes | CollisionOption.MatchedDashes | CollisionOption.ParallelLines | CollisionOption.OverloadedParallel
+	class OverloadedParallel(object):
+		"""
+		Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps
+		"""
+		def __init__(self, max_line: int, overload: OverloadOptions.AnyOverloadOptions) -> None:
+			"""
+			Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps
+			:param max_line: number of overlapping segments/lines before using the overload option
+			:param overload: Rendering option for when reaching too many parallel lines
+			"""
+			...
+		@property
+		def max_line(self) -> int:
+			"""
+			number of overlapping segments/lines before using the overload option
+			"""
+			...
+		@property
+		def overload(self) -> OverloadOptions.AnyOverloadOptions:
+			"""
+			Rendering option for when reaching too many parallel lines
+			"""
+			...
+		def with_max_line(self, max_line: int) -> CollisionOption.OverloadedParallel:
+			...
+		def with_overload(self, overload: OverloadOptions.AnyOverloadOptions) -> CollisionOption.OverloadedParallel:
+			...
+		...
+	class ParallelLines(object):
+		"""
+		Draws each of the segments as smaller, parallel lines all next to eachother
+		"""
+		def __init__(self) -> None:
+			"""
+			Draws each of the segments as smaller, parallel lines all next to eachother
+			"""
+			...
+		...
+	class MatchedDashes(object):
+		"""
+		Draws the line as a set of dashes where the dash marks match the colors of the overlapping lines
+		"""
+		def __init__(self) -> None:
+			"""
+			Draws the line as a set of dashes where the dash marks match the colors of the overlapping lines
+			"""
+			...
+		...
+	class Dashes(object):
+		"""
+		Draws the first segment and then dashes of the given color for the rest
+		"""
+		def __init__(self, color: Color) -> None:
+			"""
+			Draws the first segment and then dashes of the given color for the rest
+			:param color: Color of dashes to draw with
+			"""
+			...
+		@property
+		def color(self) -> Color:
+			"""
+			Color of dashes to draw with
+			"""
+			...
+		def with_color(self, color: Color) -> CollisionOption.Dashes:
+			...
+		...
+	...
 class Color(object):
 	"""
 	Color struct, using RGBA
@@ -336,6 +336,284 @@ class Color(object):
 	def with_b(self, b: int) -> Color:
 		...
 	def with_a(self, a: int) -> Color:
+		...
+	...
+class Triangle:
+	"""
+	Options for drawing the triangle/arrow between color changes on the Segment Renderer
+	"""
+	AnyTriangle = Triangle.None_ | Triangle.Match | Triangle.BorderMatch | Triangle.BorderStartMatch
+	class BorderStartMatch(object):
+		"""
+		Same as Triangle.BorderMatch except with an extra triangle right after the start point
+		"""
+		def __init__(self, match_radius: float, border: Marker) -> None:
+			"""
+			Same as Triangle.BorderMatch except with an extra triangle right after the start point
+			:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
+			:param border: a Marker for the border
+			"""
+			...
+		@property
+		def match_radius(self) -> float:
+			"""
+			radius of how big the match triangle is (as a percentage of segment length)
+			"""
+			...
+		@property
+		def border(self) -> Marker:
+			"""
+			a Marker for the border
+			"""
+			...
+		def with_match_radius(self, match_radius: float) -> Triangle.BorderStartMatch:
+			...
+		def with_border(self, border: Marker) -> Triangle.BorderStartMatch:
+			...
+		...
+	class BorderMatch(object):
+		"""
+		Same as Triangle.Match except with an extra border around it
+		"""
+		def __init__(self, match_radius: float, border: Marker) -> None:
+			"""
+			Same as Triangle.Match except with an extra border around it
+			:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
+			:param border: a Marker for the border
+			"""
+			...
+		@property
+		def match_radius(self) -> float:
+			"""
+			radius of how big the match triangle is (as a percentage of segment length)
+			"""
+			...
+		@property
+		def border(self) -> Marker:
+			"""
+			a Marker for the border
+			"""
+			...
+		def with_match_radius(self, match_radius: float) -> Triangle.BorderMatch:
+			...
+		def with_border(self, border: Marker) -> Triangle.BorderMatch:
+			...
+		...
+	class Match(object):
+		"""
+		Match the color of the line
+		"""
+		def __init__(self, radius: float) -> None:
+			"""
+			Match the color of the line
+			:param radius: radius is how big it is (as a percentage of segment length)
+			"""
+			...
+		@property
+		def radius(self) -> float:
+			"""
+			radius is how big it is (as a percentage of segment length)
+			"""
+			...
+		def with_radius(self, radius: float) -> Triangle.Match:
+			...
+		...
+	class None_(object):
+		"""
+		None, simply don't draw them
+		"""
+		def __init__(self) -> None:
+			"""
+			None, simply don't draw them
+			"""
+			...
+		...
+	...
+class OverloadOptions:
+	"""
+	Options for what to do when you get too many parallel lines
+	"""
+	AnyOverloadOptions = OverloadOptions.Dashes | OverloadOptions.LabeledDashes | OverloadOptions.MatchedDashes
+	class MatchedDashes(object):
+		"""
+		same as CollisionOption,MatchedDashes (represents them as dashes that represet each color of overlapping lines)
+		"""
+		def __init__(self) -> None:
+			"""
+			same as CollisionOption,MatchedDashes (represents them as dashes that represet each color of overlapping lines)
+			"""
+			...
+		...
+	class LabeledDashes(object):
+		"""
+		Similar to OverloadOptions.Dashes except it includes a label with the number of overlapping lines
+		"""
+		def __init__(self, color: Color, label: Marker) -> None:
+			"""
+			Similar to OverloadOptions.Dashes except it includes a label with the number of overlapping lines
+			:param color: Color to draw the dashes with
+			:param label: marker for size and color to draw the label
+			"""
+			...
+		@property
+		def color(self) -> Color:
+			"""
+			Color to draw the dashes with
+			"""
+			...
+		@property
+		def label(self) -> Marker:
+			"""
+			marker for size and color to draw the label
+			"""
+			...
+		def with_color(self, color: Color) -> OverloadOptions.LabeledDashes:
+			...
+		def with_label(self, label: Marker) -> OverloadOptions.LabeledDashes:
+			...
+		...
+	class Dashes(object):
+		"""
+		same as CollisionOption.Dashes (just draws dashes of the given color over the first line)
+		"""
+		def __init__(self, color: Color) -> None:
+			"""
+			same as CollisionOption.Dashes (just draws dashes of the given color over the first line)
+			"""
+			...
+		@property
+		def color(self) -> Color:
+			...
+		def with_color(self, color: Color) -> OverloadOptions.Dashes:
+			...
+		...
+	...
+class SquareGrid(Grid):
+	"""
+	Grid of fixed sized tiles where the patterns are automatically scaled to fit within.
+	"""
+	def __init__(self, patterns: list[PatternVariant], max_width: int, max_scale: float, x_pad: float, y_pad: float) -> None:
+		"""
+		Creats a grid of fixed size tiles where the patterns are automatically scaled to fit within.
+		 :param patterns: Array of patterns to fit on to the grid
+		 :param max_width: Maximum number of tiles to lay down horizontally before wrapping around
+		 :param max_scale: Maximum scale of patterns in each tile (1 is no limit)
+		 :param x_pad: amount of horizontal padding between tiles (measured in scale*x_pad pixels) 
+		 :param y_pad: amount of vertical padding between tiles (measured in scale*y_pad pixels) 
+		"""
+		...
+	...
+class HexGrid(Grid):
+	"""
+	A hexagonal grid where patterns are all rendered to fit on the grid.
+	"""
+	def __init__(self, patterns: list[PatternVariant], max_width: int) -> None:
+		"""
+		Creates a hexagonal grid where patterns are all rendered to fit on the grid.
+		 :param patterns: Array of patterns to fit on to the grid
+		 :param max_width: The maximum width of the grid (in grid points) before wrapping around
+		"""
+		...
+	...
+class Grid(object):
+	"""
+	Grid parent class for rendering grids
+	 Current grids implemented: HexGrid, SquareGrid
+	"""
+	def draw_png(self, scale: float, options: GridOptions, padding: None | float = None) -> list[int]:
+		"""
+		Draws the grid and returns a PNG as an array of bytes
+		 :param scale: (HexGrid) distance between points in pixels, (SquareGrid) size of tiles
+		 :param options: The options for how to draw the patterns
+		 :param padding: Optional padding to put around the grid
+		"""
+		...
+	def draw_to_file(self, file_name: str, scale: float, options: GridOptions, padding: None | float = None) -> None:
+		"""
+		Draws the grid and saves it to a file
+		 :param file_name: path to the file you want to save it as
+		 :param scale: (HexGrid) distance between points in pixels, (SquareGrid) size of tiles
+		 :param options: The options for how to draw the patterns
+		 :param padding: Optional padding to put around the grid
+		"""
+		...
+	def get_bound_scale(self, bound: tuple[float, float], options: float | GridOptions) -> float:
+		"""
+		Gets the max scale that will fit within the given image size
+		 :param bound: x and y maximum sizes
+		 :param options: The size of padding or the GridOptions to determine it automatically
+		"""
+		...
+	...
+def test(hi: int) -> str:
+	...
+class ModuleTestTwo:
+	class ModuleTest:
+		hello = ModuleTestTwo.ModuleTest.ItemOne | ModuleTestTwo.ModuleTest.ItemTwo | ModuleTestTwo.ModuleTest.ItemThree
+		class ItemThree(object):
+			def test(self) -> None:
+				...
+			...
+		class ItemTwo(object):
+			...
+		class ItemOne(object):
+			...
+		...
+	...
+class EndPoint:
+	"""
+	Specifier for how to draw the start and end points on a pattern
+	"""
+	AnyEndPoint = EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch
+	class BorderedMatch(object):
+		"""
+		Draw a point that matches the starting/ending color with a border
+		"""
+		def __init__(self, match_radius: float, border: Marker) -> None:
+			"""
+			Draw a point that matches the starting/ending color with a border
+			"""
+			...
+		@property
+		def match_radius(self) -> float:
+			...
+		@property
+		def border(self) -> Marker:
+			...
+		def with_match_radius(self, match_radius: float) -> EndPoint.BorderedMatch:
+			...
+		def with_border(self, border: Marker) -> EndPoint.BorderedMatch:
+			...
+		...
+	class Match(object):
+		"""
+		Draw a point that matches the starting/ending color
+		"""
+		def __init__(self, radius: float) -> None:
+			"""
+			Draw a point that matches the starting/ending color
+			"""
+			...
+		@property
+		def radius(self) -> float:
+			...
+		def with_radius(self, radius: float) -> EndPoint.Match:
+			...
+		...
+	class Point(object):
+		"""
+		Draw a normal point
+		"""
+		def __init__(self, point: Point.AnyPoint) -> None:
+			"""
+			Draw a normal point
+			"""
+			...
+		@property
+		def point(self) -> Point.AnyPoint:
+			...
+		def with_point(self, point: Point.AnyPoint) -> EndPoint.Point:
+			...
 		...
 	...
 class Lines:
@@ -449,43 +727,22 @@ class Lines:
 			...
 		...
 	...
-class GridOptions(object):
+class AngleSig(object):
 	"""
-	Main struct for all pattern rendering options
+	Angle sigs of a pattern (ex. qqq)
 	"""
-	def __init__(self, line_thickness: float, pattern_options: GridPatternOptions.AnyGridPatternOptions, center_dot: Point.AnyPoint) -> None:
+	def __init__(self, sigs: str) -> None:
 		"""
-		Main struct for all pattern rendering options
-		:param line_thickness: Thickness of line in relation to distance between points
-		:param pattern_options: Further options for how to render each pattern
-		:param center_dot: Optional point to place in the center of each pattern (helps with determining pattern size at a glance)
+		Make a new angle sig
+		 :param sigs: String of sigs (ex. qqq)
 		"""
 		...
-	@property
-	def line_thickness(self) -> float:
+	def get_sigs(self) -> str:
 		"""
-		Thickness of line in relation to distance between points
-		 eg. if the line_thickness = 0.1, and the distance between points is 10 pixels,
-		 then the line_thickness would be 1 pixel
+		 gets the sigs as a string
 		"""
 		...
-	@property
-	def pattern_options(self) -> GridPatternOptions.AnyGridPatternOptions:
-		"""
-		Further options for how to render each pattern
-		"""
-		...
-	@property
-	def center_dot(self) -> Point.AnyPoint:
-		"""
-		Optional point to place in the center of each pattern (helps with determining pattern size at a glance)
-		"""
-		...
-	def with_line_thickness(self, line_thickness: float) -> GridOptions:
-		...
-	def with_pattern_options(self, pattern_options: GridPatternOptions.AnyGridPatternOptions) -> GridOptions:
-		...
-	def with_center_dot(self, center_dot: Point.AnyPoint) -> GridOptions:
+	def __repr__(self) -> str:
 		...
 	...
 class Point:
@@ -548,248 +805,6 @@ class Point:
 			"""
 			Doesn't draw any points
 			"""
-			...
-		...
-	...
-class Intersections:
-	"""
-	How to draw all the points in a pattern, including start, end, and middle points
-	"""
-	AnyIntersections = Intersections.Nothing | Intersections.UniformPoints | Intersections.EndsAndMiddle
-	class EndsAndMiddle(object):
-		"""
-		Draws a different point for the start, end, and middle
-		"""
-		def __init__(self, start: EndPoint.AnyEndPoint, middle: Point.AnyPoint, end: EndPoint.AnyEndPoint) -> None:
-			"""
-			Draws a different point for the start, end, and middle
-			"""
-			...
-		@property
-		def start(self) -> EndPoint.AnyEndPoint:
-			...
-		@property
-		def middle(self) -> Point.AnyPoint:
-			...
-		@property
-		def end(self) -> EndPoint.AnyEndPoint:
-			...
-		def with_start(self, start: EndPoint.AnyEndPoint) -> Intersections.EndsAndMiddle:
-			...
-		def with_middle(self, middle: Point.AnyPoint) -> Intersections.EndsAndMiddle:
-			...
-		def with_end(self, end: EndPoint.AnyEndPoint) -> Intersections.EndsAndMiddle:
-			...
-		...
-	class UniformPoints(object):
-		"""
-		Draws the same point for everything, including start and end
-		"""
-		def __init__(self, point: Point.AnyPoint) -> None:
-			"""
-			Draws the same point for everything, including start and end
-			"""
-			...
-		@property
-		def point(self) -> Point.AnyPoint:
-			...
-		def with_point(self, point: Point.AnyPoint) -> Intersections.UniformPoints:
-			...
-		...
-	class Nothing(object):
-		"""
-		Doesn't draw any points
-		"""
-		def __init__(self) -> None:
-			"""
-			Doesn't draw any points
-			"""
-			...
-		...
-	...
-class EndPoint:
-	"""
-	Specifier for how to draw the start and end points on a pattern
-	"""
-	AnyEndPoint = EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch
-	class BorderedMatch(object):
-		"""
-		Draw a point that matches the starting/ending color with a border
-		"""
-		def __init__(self, match_radius: float, border: Marker) -> None:
-			"""
-			Draw a point that matches the starting/ending color with a border
-			"""
-			...
-		@property
-		def match_radius(self) -> float:
-			...
-		@property
-		def border(self) -> Marker:
-			...
-		def with_match_radius(self, match_radius: float) -> EndPoint.BorderedMatch:
-			...
-		def with_border(self, border: Marker) -> EndPoint.BorderedMatch:
-			...
-		...
-	class Match(object):
-		"""
-		Draw a point that matches the starting/ending color
-		"""
-		def __init__(self, radius: float) -> None:
-			"""
-			Draw a point that matches the starting/ending color
-			"""
-			...
-		@property
-		def radius(self) -> float:
-			...
-		def with_radius(self, radius: float) -> EndPoint.Match:
-			...
-		...
-	class Point(object):
-		"""
-		Draw a normal point
-		"""
-		def __init__(self, point: Point.AnyPoint) -> None:
-			"""
-			Draw a normal point
-			"""
-			...
-		@property
-		def point(self) -> Point.AnyPoint:
-			...
-		def with_point(self, point: Point.AnyPoint) -> EndPoint.Point:
-			...
-		...
-	...
-class SquareGrid(Grid):
-	"""
-	Grid of fixed sized tiles where the patterns are automatically scaled to fit within.
-	"""
-	def __init__(self, patterns: list[PatternVariant], max_width: int, max_scale: float, x_pad: float, y_pad: float) -> None:
-		"""
-		Creats a grid of fixed size tiles where the patterns are automatically scaled to fit within.
-		 :param patterns: Array of patterns to fit on to the grid
-		 :param max_width: Maximum number of tiles to lay down horizontally before wrapping around
-		 :param max_scale: Maximum scale of patterns in each tile (1 is no limit)
-		 :param x_pad: amount of horizontal padding between tiles (measured in scale*x_pad pixels) 
-		 :param y_pad: amount of vertical padding between tiles (measured in scale*y_pad pixels) 
-		"""
-		...
-	...
-class HexGrid(Grid):
-	"""
-	A hexagonal grid where patterns are all rendered to fit on the grid.
-	"""
-	def __init__(self, patterns: list[PatternVariant], max_width: int) -> None:
-		"""
-		Creates a hexagonal grid where patterns are all rendered to fit on the grid.
-		 :param patterns: Array of patterns to fit on to the grid
-		 :param max_width: The maximum width of the grid (in grid points) before wrapping around
-		"""
-		...
-	...
-class Grid(object):
-	"""
-	Grid parent class for rendering grids
-	 Current grids implemented: HexGrid, SquareGrid
-	"""
-	def draw_png(self, scale: float, options: GridOptions, padding: None | float = None) -> list[int]:
-		"""
-		Draws the grid and returns a PNG as an array of bytes
-		 :param scale: (HexGrid) distance between points in pixels, (SquareGrid) size of tiles
-		 :param options: The options for how to draw the patterns
-		 :param padding: Optional padding to put around the grid
-		"""
-		...
-	def draw_to_file(self, file_name: str, scale: float, options: GridOptions, padding: None | float = None) -> None:
-		"""
-		Draws the grid and saves it to a file
-		 :param file_name: path to the file you want to save it as
-		 :param scale: (HexGrid) distance between points in pixels, (SquareGrid) size of tiles
-		 :param options: The options for how to draw the patterns
-		 :param padding: Optional padding to put around the grid
-		"""
-		...
-	def get_bound_scale(self, bound: tuple[float, float], options: float | GridOptions) -> float:
-		"""
-		Gets the max scale that will fit within the given image size
-		 :param bound: x and y maximum sizes
-		 :param options: The size of padding or the GridOptions to determine it automatically
-		"""
-		...
-	...
-class CollisionOption:
-	"""
-	Options for drawing overlapping segments (impossible patterns)
-	"""
-	AnyCollisionOption = CollisionOption.Dashes | CollisionOption.MatchedDashes | CollisionOption.ParallelLines | CollisionOption.OverloadedParallel
-	class OverloadedParallel(object):
-		"""
-		Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps
-		"""
-		def __init__(self, max_line: int, overload: OverloadOptions.AnyOverloadOptions) -> None:
-			"""
-			Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps
-			:param max_line: number of overlapping segments/lines before using the overload option
-			:param overload: Rendering option for when reaching too many parallel lines
-			"""
-			...
-		@property
-		def max_line(self) -> int:
-			"""
-			number of overlapping segments/lines before using the overload option
-			"""
-			...
-		@property
-		def overload(self) -> OverloadOptions.AnyOverloadOptions:
-			"""
-			Rendering option for when reaching too many parallel lines
-			"""
-			...
-		def with_max_line(self, max_line: int) -> CollisionOption.OverloadedParallel:
-			...
-		def with_overload(self, overload: OverloadOptions.AnyOverloadOptions) -> CollisionOption.OverloadedParallel:
-			...
-		...
-	class ParallelLines(object):
-		"""
-		Draws each of the segments as smaller, parallel lines all next to eachother
-		"""
-		def __init__(self) -> None:
-			"""
-			Draws each of the segments as smaller, parallel lines all next to eachother
-			"""
-			...
-		...
-	class MatchedDashes(object):
-		"""
-		Draws the line as a set of dashes where the dash marks match the colors of the overlapping lines
-		"""
-		def __init__(self) -> None:
-			"""
-			Draws the line as a set of dashes where the dash marks match the colors of the overlapping lines
-			"""
-			...
-		...
-	class Dashes(object):
-		"""
-		Draws the first segment and then dashes of the given color for the rest
-		"""
-		def __init__(self, color: Color) -> None:
-			"""
-			Draws the first segment and then dashes of the given color for the rest
-			:param color: Color of dashes to draw with
-			"""
-			...
-		@property
-		def color(self) -> Color:
-			"""
-			Color of dashes to draw with
-			"""
-			...
-		def with_color(self, color: Color) -> CollisionOption.Dashes:
 			...
 		...
 	...

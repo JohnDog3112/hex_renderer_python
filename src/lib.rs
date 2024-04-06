@@ -1,4 +1,4 @@
-use hex_renderer::{pattern_utils::Angle};
+use hex_renderer::pattern_utils::Angle;
 
 use pyo3::{pymodule, Python, types::PyModule, PyResult};
 
@@ -26,62 +26,10 @@ fn hex_renderer_python(py: Python, m: &PyModule) -> PyResult<()> {
 
     
     classes::grids::initialize_classes(m)?;
-
-    test_fn(&<classes::color::PyColor as ::interface_macros::PyType>::path_string);
+    
 
     Ok(())
 }
-
-
-/*fn test_fn<T: Fn() -> String + Send>(hi: T) -> String {
-    hi()
-}*/
-
-/*fn test_fn(hi: &'static (dyn Send + Fn() -> String)) -> String {
-    hi()
-}*/
-
-/*#[::interface_macros::py_type_gen(nested = ModuleTest)]
-#[pyo3::pyclass]
-struct ItemOne;
-#[::interface_macros::py_type_gen(nested = ModuleTest)]
-#[pyo3::pyclass]
-struct ItemTwo;
-#[::interface_macros::py_type_gen(nested = ModuleTest)]
-#[pyo3::pyclass]
-struct ItemThree;
-
-
-#[::interface_macros::py_type_gen(module = "ModuleTest", nested = ModuleTestTwo, union = ("hello", [ItemOne, ItemTwo, ItemThree]))]
-struct ModuleTest;
-
-#[::interface_macros::py_type_gen(module = "ModuleTestTwo")]
-struct ModuleTestTwo;*/
-
-
-/*#[::pyo3::pyclass]
-#[derive(Debug, PartialEq, PartialOrd)]
-struct Test {
-    f: f32
-}
-
-#[::pyo3::pymethods]
-impl Test {
-    fn __repr__(&self) -> String {
-        format!("{:?}", self)
-    }
-
-    fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> PyResult<bool> {
-        Ok(match op {
-            pyo3::pyclass::CompareOp::Lt => self < other,
-            pyo3::pyclass::CompareOp::Le => self <= other,
-            pyo3::pyclass::CompareOp::Eq => self == other,
-            pyo3::pyclass::CompareOp::Ne => self != other,
-            pyo3::pyclass::CompareOp::Gt => self > other,
-            pyo3::pyclass::CompareOp::Ge => self >= other,
-        })
-    }
-}*/
 
 
 #[allow(clippy::ptr_arg)]

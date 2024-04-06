@@ -3,8 +3,6 @@ use std::{collections::{HashMap, HashSet}, marker::PhantomData, ops::Deref, any:
 pub use interface_macros_impl::py_gen;
 pub use interface_macros_impl::py_type_gen;
 
-pub use lazy_static::lazy_static;
-
 use pyo3::{Py, Python, PyResult, PyRef, PyClass};
 
 
@@ -271,34 +269,17 @@ pub use inventory;
 pub const fn check_pytype<T: PyType>() {}
 
 
-pub trait StaticString: Deref<Target = String> + Send + Sync {}
-impl<T> StaticString for T 
-where
-    T: Deref<Target = String>,
-    T: Send + Sync
-{
-    
-}
-pub trait StaticTypeId: Deref<Target = TypeId> + Send + Sync {}
-impl<T> StaticTypeId for T 
-where
-    T: Deref<Target = TypeId>,
-    T: Send + Sync
-{
-
-}
-
+type StringFn = &'static (dyn Send + Sync + Fn() -> String);
+type TypeIdFn = &'static (dyn Send + Sync + Fn() -> TypeId);
 
 #[derive(Clone, Copy)]
 pub struct TypeProperties {
-    pub name: &'static dyn StaticString,
-    pub name_path: &'static dyn StaticString,
-    pub extend: &'static dyn StaticString,
+    pub name: StringFn,
+    pub name_path: StringFn,
+    pub extend: StringFn,
     pub path: &'static [&'static str],
-    pub type_id: &'static dyn StaticTypeId,
+    pub type_id: TypeIdFn,
 }
-
-
 
 #[derive(Debug)]
 pub enum PyFuncType {
@@ -308,8 +289,8 @@ pub enum PyFuncType {
 pub struct PyFunc {
     pub name: &'static str,
     pub comments: &'static [&'static str],
-    pub args: &'static [(&'static str, &'static dyn StaticString, &'static dyn StaticTypeId)],
-    pub ret: &'static dyn StaticString,
+    pub args: &'static [(&'static str, StringFn, TypeIdFn)],
+    pub ret: StringFn,
     pub slf: bool,
     pub typ: PyFuncType
 }
@@ -326,8 +307,8 @@ impl PyFunc {
             .chain(
                 self.args.iter()
                     .filter_map(|(a,b, c)| {
-                        let b = (*b).deref();
-                        if (*c).deref() == &TypeId::of::<pyo3::Python>() {
+                        let b = (b)();
+                        if (c)() == TypeId::of::<pyo3::Python>() {
                             None
                         } else if b.len() < 6 || &b[0..6] != "None |" {
                             Some(format!("{a}: {}", b))
@@ -354,7 +335,7 @@ impl PyFunc {
             },
         };
 
-        strs.push(format!("def {}({args}) -> {}:", name, self.ret.deref()));
+        strs.push(format!("def {}({args}) -> {}:", name, (self.ret)()));
 
         if !self.comments.is_empty() {
             strs.push("\t\"\"\"".to_string());
@@ -381,19 +362,19 @@ pub enum StoredPyTypes {
     Class{
         typ: TypeProperties, 
         comments: &'static [&'static str], 
-        declarations: &'static [&'static dyn StaticString],
+        declarations: &'static [StringFn],
         unions: &'static [(&'static str, &'static [TypeProperties])]
     },
     Module{
         typ: TypeProperties, 
         comments: &'static [&'static str], 
-        declarations: &'static [&'static dyn StaticString],
+        declarations: &'static [StringFn],
         unions: &'static [(&'static str, &'static [TypeProperties])]
     },
 }
 
 impl StoredPyTypes {
-    pub const fn new_func(name: &'static str, comments: &'static [&'static str], args: &'static [(&'static str, &'static dyn StaticString, &'static dyn StaticTypeId)], ret: &'static dyn StaticString, slf: bool) -> Self {
+    pub const fn new_func(name: &'static str, comments: &'static [&'static str], args: &'static [(&'static str, StringFn, TypeIdFn)], ret: StringFn, slf: bool) -> Self {
         Self::Fn(
             PyFunc {
                 name,
@@ -415,11 +396,11 @@ impl StoredPyTypes {
         )
     }
 
-    pub const fn new_class(typ: TypeProperties, comments: &'static [&'static str], declarations: &'static [&'static dyn StaticString], unions: &'static [(&'static str, &'static [TypeProperties])]) -> Self {
+    pub const fn new_class(typ: TypeProperties, comments: &'static [&'static str], declarations: &'static [StringFn], unions: &'static [(&'static str, &'static [TypeProperties])]) -> Self {
         Self::Class{typ, comments, declarations, unions}
     } 
 
-    pub const fn new_module(typ: TypeProperties, comments: &'static [&'static str], declarations: &'static [&'static dyn StaticString], unions: &'static [(&'static str, &'static [TypeProperties])]) -> Self {
+    pub const fn new_module(typ: TypeProperties, comments: &'static [&'static str], declarations: &'static [StringFn], unions: &'static [(&'static str, &'static [TypeProperties])]) -> Self {
         Self::Module{typ, comments, declarations, unions}
     } 
 
@@ -497,7 +478,7 @@ enum PyTreeNode {
         #[allow(unused)]
         typ: TypeProperties,
         inner: OrderedHashMap<String, PyTreeNode>,
-        declarations: &'static [&'static dyn StaticString],
+        declarations: &'static [StringFn],
         comments: &'static [&'static str],
         unions: &'static[(&'static str, &'static [TypeProperties])]
     },
@@ -505,7 +486,7 @@ enum PyTreeNode {
         extends: String,
         typ: TypeProperties,
         inner: OrderedHashMap<String, PyTreeNode>,
-        declarations: &'static [&'static dyn StaticString],
+        declarations: &'static [StringFn],
         comments: &'static [&'static str],
         unions: &'static[(&'static str, &'static [TypeProperties])]
     },
@@ -534,11 +515,11 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
     match node {
         StoredPyTypes::Fn(_) => todo!(),
         StoredPyTypes::Class { typ, comments, declarations, unions } => {
-            if let Some(mut exist) = map.remove(&typ.name.deref()[..]) {
+            if let Some(mut exist) = map.remove(&(typ.name)()[..]) {
                 match exist {
                     PyTreeNode::Path(inner) => {
-                        map.insert(typ.name.deref().clone(), PyTreeNode::Class {
-                            extends: typ.extend.deref().clone(),
+                        map.insert((typ.name)(), PyTreeNode::Class {
+                            extends: (typ.extend)(),
                             typ: typ.clone(),
                             inner,
                             declarations,
@@ -546,25 +527,25 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
                             unions: &[],
                         });
                     },
-                    PyTreeNode::Class { extends:_, typ, inner:_, comments: _, declarations: _, unions: _ } => {
+                    PyTreeNode::Class { extends:_, typ: tmp_typ, inner:_, comments: _, declarations: _, unions: _ } => {
                         //std::any::Any::type_id(*class)
-                        if typ.type_id.deref() != typ.type_id.deref() {
-                            panic!("`{}` already exists!", typ.name.deref());
+                        if (typ.type_id)() != (tmp_typ.type_id)() {
+                            panic!("`{}` already exists!", (typ.name)());
                         }
                         if let PyTreeNode::Class {extends: _, typ: _, inner: _, comments: old_comments, declarations: old_declarations, unions: old_unions } = &mut exist {
                             *old_comments = comments;
                             *old_declarations = declarations;
                             *old_unions = unions;
                         }
-                        map.insert(typ.name.deref().clone(), exist);
+                        map.insert((typ.name)(), exist);
                     },
-                    PyTreeNode::Module{ typ:_, inner:_, declarations:_, comments:_, unions: _ } => panic!("`{}` already exists as a module!", typ.name.deref()),
-                    PyTreeNode::Func(_) => panic!("`{}` already exists!", typ.name.deref()),
+                    PyTreeNode::Module{ typ:_, inner:_, declarations:_, comments:_, unions: _ } => panic!("`{}` already exists as a module!", (typ.name)()),
+                    PyTreeNode::Func(_) => panic!("`{}` already exists!", (typ.name)()),
                 }
                 return;
             }
-            map.insert(typ.name.deref().clone(), PyTreeNode::Class {
-                extends: typ.extend.deref().clone(),
+            map.insert((typ.name)(), PyTreeNode::Class {
+                extends: (typ.extend)(),
                 typ: *typ,
                 inner: OrderedHashMap::new(),
                 declarations,
@@ -574,16 +555,16 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
         }
         StoredPyTypes::Impl(imp) => {
             let mut new_comments: &[&str] = &[];
-            let mut declarations: &'static [&'static dyn StaticString] = &[];
+            let mut declarations: &'static [StringFn] = &[];
             let mut unions: &[(&'static str, &'static [TypeProperties])] = &[];
-            let mut inner = if let Some(node) = map.remove(&imp.typ.name.deref()[..]) {
+            let mut inner = if let Some(node) = map.remove(&(imp.typ.name)()[..]) {
                 match node {
                     PyTreeNode::Path(inner) => {
                         //declarations = &[];
                         inner
                     },
                     PyTreeNode::Class { extends:_, typ, inner, comments, declarations: old_declarations, unions: old_unions } => {
-                        if typ.type_id.deref() == imp.typ.type_id.deref() {
+                        if (typ.type_id)() == (imp.typ.type_id)() {
                             new_comments = comments;
                             declarations = old_declarations;
                             unions = old_unions;
@@ -593,7 +574,7 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
                         }
                     },
                     PyTreeNode::Func(_) => todo!(),
-                    PyTreeNode::Module { typ:_, inner:_, declarations:_, comments:_ , unions:_} => panic!("`{}` Can't add impl block to module!", imp.typ.name.deref()),
+                    PyTreeNode::Module { typ:_, inner:_, declarations:_, comments:_ , unions:_} => panic!("`{}` Can't add impl block to module!", (imp.typ.name)()),
                 }
             } else {
                 OrderedHashMap::new()
@@ -604,8 +585,8 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
                 //eprintln!("func: {}", func.name.to_string());
                 inner.insert(func.name.to_string(), PyTreeNode::Func(*func));
             }
-            map.insert(imp.typ.name.deref().clone(), PyTreeNode::Class {
-                extends: imp.typ.extend.deref().clone(),
+            map.insert((imp.typ.name)(), PyTreeNode::Class {
+                extends: (imp.typ.extend)(),
                 typ: imp.typ.clone(),
                 inner,
                 declarations,
@@ -614,10 +595,10 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
             });
         },
         StoredPyTypes::Module { typ, comments, declarations, unions } => {
-            if let Some(exist) = map.remove(&typ.name.deref()[..]) {
+            if let Some(exist) = map.remove(&(typ.name)()[..]) {
                 match exist {
                     PyTreeNode::Path(inner) => {
-                        map.insert(typ.name.deref().clone(), PyTreeNode::Module {
+                        map.insert((typ.name)(), PyTreeNode::Module {
                             typ: typ.clone(),
                             inner,
                             declarations,
@@ -625,13 +606,13 @@ fn add_to_path(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static Stor
                             unions,
                         });
                     },
-                    PyTreeNode::Class { extends:_, typ, inner:_, comments: _, declarations: _, unions: _ } => panic!("`{}` already exists as a class!", typ.name.deref()),
-                    PyTreeNode::Module{ typ:_, inner:_, declarations:_, comments:_, unions: _ } => panic!("`{}` already exists as a module!", typ.name.deref()),
-                    PyTreeNode::Func(_) => panic!("`{}` already exists!", typ.name.deref()),
+                    PyTreeNode::Class { extends:_, typ, inner:_, comments: _, declarations: _, unions: _ } => panic!("`{}` already exists as a class!", (typ.name)()),
+                    PyTreeNode::Module{ typ:_, inner:_, declarations:_, comments:_, unions: _ } => panic!("`{}` already exists as a module!", (typ.name)()),
+                    PyTreeNode::Func(_) => panic!("`{}` already exists!", (typ.name)()),
                 }
                 return;
             }
-            map.insert(typ.name.deref().clone(), PyTreeNode::Module {
+            map.insert((typ.name)(), PyTreeNode::Module {
                 typ: *typ,
                 inner: OrderedHashMap::new(),
                 declarations,
@@ -650,11 +631,11 @@ fn add_node(map: &mut OrderedHashMap<String, PyTreeNode>, node: &'static StoredP
             add_to_path(map, node, imp.typ.path)
         },
         StoredPyTypes::Class { typ, comments:_, declarations:_, unions:_ } => {
-            println!("class: {}", **(typ.name));
+            println!("class: {}", (typ.name)());
             add_to_path(map, node, typ.path)
         }
         StoredPyTypes::Module { typ, comments:_, declarations:_, unions:_ } => {
-            println!("module: {}", **(typ.name));
+            println!("module: {}", (typ.name)());
             add_to_path(map, node, typ.path);
         },
     }
@@ -686,7 +667,7 @@ fn nodes_to_string(map: OrderedHashMap<String, PyTreeNode>) -> Vec<String> {
                     collected.push("\t\"\"\"".to_string());
                 }
                 for decl in declarations {
-                    collected.push(format!("\t{}", decl.to_string()));
+                    collected.push(format!("\t{}", (decl)()));
                 }
 
                 for (name, union_parts) in unions {
@@ -694,9 +675,9 @@ fn nodes_to_string(map: OrderedHashMap<String, PyTreeNode>) -> Vec<String> {
                         continue;
                     }
 
-                    let mut out = format!("{name} = {}", union_parts[0].name_path.deref());
+                    let mut out = format!("{name} = {}", (union_parts[0].name_path)());
                     for part in union_parts.iter().skip(1) {
-                        out = format!("{out} | {}", part.name_path.deref());
+                        out = format!("{out} | {}", (part.name_path)());
                     }
                     collected.push(format!("\t{out}"));
                 }
@@ -719,7 +700,7 @@ fn nodes_to_string(map: OrderedHashMap<String, PyTreeNode>) -> Vec<String> {
                     collected.push("\t\"\"\"".to_string());
                 }
                 for decl in declarations {
-                    collected.push(format!("\t{}", decl.to_string()));
+                    collected.push(format!("\t{}", (decl)()));
                 }
 
                 for (name, union_parts) in unions {
@@ -727,9 +708,9 @@ fn nodes_to_string(map: OrderedHashMap<String, PyTreeNode>) -> Vec<String> {
                         continue;
                     }
 
-                    let mut out = format!("{name} = {}", union_parts[0].name_path.deref());
+                    let mut out = format!("{name} = {}", (union_parts[0].name_path)());
                     for part in union_parts.iter().skip(1) {
-                        out = format!("{out} | {}", part.name_path.deref());
+                        out = format!("{out} | {}", (part.name_path)());
                     }
                     collected.push(format!("\t{out}"));
                 }
@@ -772,12 +753,12 @@ fn declare_declerations(map: OrderedHashMap<String, PyTreeNode>, path: Vec<Strin
 
                 for decl in declarations {
                     //println!("{}inner path {key}: {}", "\t".repeat(path.len()+1), path.join("."));
-                    out.push(format!("{path_str}{key}.{}", decl.to_string()));
+                    out.push(format!("{path_str}{key}.{}", (decl)()));
                 }
 
                 for (name, parts) in unions {
                     let parts_str = (*parts).iter()
-                        .map(|part| part.name_path.to_string())
+                        .map(|part| (part.name_path)())
                         .collect::<Vec<String>>()
                         .join(" | ");
                     out.push(format!("{path_str}{key}.{name} = {parts_str}"))
@@ -839,10 +820,10 @@ fn generate_docs(map: OrderedHashMap<String, PyTreeNode>, root: bool) -> Vec<Str
             },
             PyTreeNode::Func(func) => {
                 let args = func.args.iter().filter_map(|(name, typ, typ_id)| {
-                    if (*typ_id).deref() == &TypeId::of::<pyo3::Python>() {
+                    if (typ_id)() == TypeId::of::<pyo3::Python>() {
                         None
                     } else {
-                        Some(format!("{name}: {}", typ.to_string()))
+                        Some(format!("{name}: {}", (typ)()))
                     }
                 }).collect::<Vec<String>>();
 
