@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use proc_macro2::{TokenStream, TokenTree};
 use quote::{quote, ToTokens};
-use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType, Pat, LitStr, Attribute, ItemStruct, ItemImpl, FnArg, Expr, Lit};
+use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType, Pat, LitStr, Attribute, ItemStruct, ItemImpl, FnArg, Expr, Lit, Token};
 
 use crate::TypeArgs;
 
@@ -309,6 +309,22 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
         quote!(&#dec ,)
     }).collect();
 
+    let new_function = if args.module.is_some() {
+        quote!(new_module)
+    } else {
+        quote!(new_class)
+    };
+
+    let unions = args.unions.iter().map(|(name, union_parts)| {
+        let parts = union_parts.iter()
+            .map(|part| {
+                let tmp = setup_type_properties(part);
+                quote!(#tmp,)
+            }).collect::<TokenStream>();
+        
+        quote!((#name, &[#parts]),)
+    }).collect::<TokenStream>();
+
     Ok(quote! {
         #input
 
@@ -319,12 +335,13 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
             const NAME: &'static str = #py_path_name;
         }
 
-        #[cfg(test)]
+        //#[cfg(test)]
         ::interface_macros::inventory::submit! {
-            ::interface_macros::StoredPyTypes::new_class(
+            ::interface_macros::StoredPyTypes::#new_function(
                 #properties,
                 &[#doc_comments],
-                &[#declarations]
+                &[#declarations],
+                &[#unions]
             )
         }
 

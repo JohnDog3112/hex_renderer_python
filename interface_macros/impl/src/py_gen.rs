@@ -332,37 +332,17 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
         None
     };
 
-    let decl_name = Ident::new( &format!("{}AnyDeclaration", py_path_name.to_string()), py_path_name.span());
-    
-    let decl = py_type_str.map(|(format_str, args)| {
-        let outer_fmt = format!("{} = {{}}", any_type_name.to_string());
-        quote! {
-            ::interface_macros::lazy_static! {
-                pub static ref #decl_name: String = format!(
-                    #outer_fmt,
-                    format!(
-                        #format_str,
-                        #args
-                    )
-                );
-            }
-        }
-    });
-
-    let py_type_gen_decl = if decl.is_some() {
-        Some(quote!(declaration = #decl_name,))
-    } else {
-        None
-    };
+    let union_parts = variant_idents.iter().map(|ident| {
+        quote!(#ident,)
+    }).collect::<TokenStream>();
 
     let vis = &input.vis;
     let attrs: TokenStream = get_comments(&input.attrs).iter().map(|a| a.to_token_stream()).collect();
     
     Ok(quote!{
 
-        #decl
 
-        #[::interface_macros::py_type_gen(module = #py_path_name, #py_type_gen_decl)]
+        #[::interface_macros::py_type_gen(module = #py_path_name, union = (#any_type_name, [#union_parts]))]
         #attrs
         #vis struct #module_ident;
         

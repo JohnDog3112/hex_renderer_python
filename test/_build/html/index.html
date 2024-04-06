@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Welcome to hex_renderer_python’s documentation! &#8212; hex_renderer_python  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="welcome-to-hex-renderer-python-s-documentation">
+<h1>Welcome to hex_renderer_python’s documentation!<a class="headerlink" href="#welcome-to-hex-renderer-python-s-documentation" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="AngleSig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AngleSig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AngleSig" title="Link to this definition">¶</a></dt>
+<dd><p>Angle sigs of a pattern (ex. qqq)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="AngleSig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AngleSig.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Make a new angle sig
+:param sigs: String of sigs (ex. qqq)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AngleSig.get_sigs">
+<span class="sig-name descname"><span class="pre">get_sigs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AngleSig.get_sigs" title="Link to this definition">¶</a></dt>
+<dd><p>gets the sigs as a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="AngleSig.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AngleSig.__repr__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<p id="module-OverloadOptions">Options for what to do when you get too many parallel lines</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="OverloadOptions.MatchedDashes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OverloadOptions.</span></span><span class="sig-name descname"><span class="pre">MatchedDashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.MatchedDashes" title="Link to this definition">¶</a></dt>
+<dd><p>same as CollisionOption,MatchedDashes (represents them as dashes that represet each color of overlapping lines)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.MatchedDashes.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.MatchedDashes.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>same as CollisionOption,MatchedDashes (represents them as dashes that represet each color of overlapping lines)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="OverloadOptions.LabeledDashes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OverloadOptions.</span></span><span class="sig-name descname"><span class="pre">LabeledDashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.LabeledDashes" title="Link to this definition">¶</a></dt>
+<dd><p>Similar to OverloadOptions.Dashes except it includes a label with the number of overlapping lines</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.LabeledDashes.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.LabeledDashes.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Similar to OverloadOptions.Dashes except it includes a label with the number of overlapping lines
+:param color: Color to draw the dashes with
+:param label: marker for size and color to draw the label</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.LabeledDashes.get_color">
+<span class="sig-name descname"><span class="pre">get_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.LabeledDashes.get_color" title="Link to this definition">¶</a></dt>
+<dd><p>Color to draw the dashes with</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.LabeledDashes.get_label">
+<span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.LabeledDashes.get_label" title="Link to this definition">¶</a></dt>
+<dd><p>marker for size and color to draw the label</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.LabeledDashes.with_color">
+<span class="sig-name descname"><span class="pre">with_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.LabeledDashes.with_color" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.LabeledDashes.with_label">
+<span class="sig-name descname"><span class="pre">with_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.LabeledDashes.with_label" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="OverloadOptions.Dashes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OverloadOptions.</span></span><span class="sig-name descname"><span class="pre">Dashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.Dashes" title="Link to this definition">¶</a></dt>
+<dd><p>same as CollisionOption.Dashes (just draws dashes of the given color over the first line)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.Dashes.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.Dashes.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>same as CollisionOption.Dashes (just draws dashes of the given color over the first line)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.Dashes.get_color">
+<span class="sig-name descname"><span class="pre">get_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.Dashes.get_color" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.Dashes.with_color">
+<span class="sig-name descname"><span class="pre">with_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.Dashes.with_color" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="OverloadOptions.PatternVariant">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OverloadOptions.</span></span><span class="sig-name descname"><span class="pre">PatternVariant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.PatternVariant" title="Link to this definition">¶</a></dt>
+<dd><p>A hexpattern that can be rendered on a grid</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.PatternVariant.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_sigs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">great_spell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.PatternVariant.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new PatternVariant
+:param direction: Starting direction (North_East, East, South_East, South_West, West, North_West)
+:param angle_sigs: String of angle sigs (accepted characters: [q,w,e,d,s,a])
+:param great_spell: Whether or not it’s a great spell (Default = false)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.PatternVariant.get_direction">
+<span class="sig-name descname"><span class="pre">get_direction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.PatternVariant.get_direction" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the starting direction of the pattern</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.PatternVariant.get_angle_sigs">
+<span class="sig-name descname"><span class="pre">get_angle_sigs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.PatternVariant.get_angle_sigs" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the angle_sigs of the pattern</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OverloadOptions.PatternVariant.get_great_spell">
+<span class="sig-name descname"><span class="pre">get_great_spell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OverloadOptions.PatternVariant.get_great_spell" title="Link to this definition">¶</a></dt>
+<dd><p>Gets whether or not the pattern is a great spell</p>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-Triangle">Options for drawing the triangle/arrow between color changes on the Segment Renderer</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="Triangle.BorderStartMatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Triangle.</span></span><span class="sig-name descname"><span class="pre">BorderStartMatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderStartMatch" title="Link to this definition">¶</a></dt>
+<dd><p>Same as Triangle.BorderMatch except with an extra triangle right after the start point</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderStartMatch.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderStartMatch.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Same as Triangle.BorderMatch except with an extra triangle right after the start point
+:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
+:param border: a Marker for the border</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderStartMatch.get_match_radius">
+<span class="sig-name descname"><span class="pre">get_match_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderStartMatch.get_match_radius" title="Link to this definition">¶</a></dt>
+<dd><p>radius of how big the match triangle is (as a percentage of segment length)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderStartMatch.get_border">
+<span class="sig-name descname"><span class="pre">get_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderStartMatch.get_border" title="Link to this definition">¶</a></dt>
+<dd><p>a Marker for the border</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderStartMatch.with_match_radius">
+<span class="sig-name descname"><span class="pre">with_match_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderStartMatch.with_match_radius" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderStartMatch.with_border">
+<span class="sig-name descname"><span class="pre">with_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderStartMatch.with_border" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Triangle.BorderMatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Triangle.</span></span><span class="sig-name descname"><span class="pre">BorderMatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderMatch" title="Link to this definition">¶</a></dt>
+<dd><p>Same as Triangle.Match except with an extra border around it</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderMatch.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderMatch.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Same as Triangle.Match except with an extra border around it
+:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
+:param border: a Marker for the border</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderMatch.get_match_radius">
+<span class="sig-name descname"><span class="pre">get_match_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderMatch.get_match_radius" title="Link to this definition">¶</a></dt>
+<dd><p>radius of how big the match triangle is (as a percentage of segment length)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderMatch.get_border">
+<span class="sig-name descname"><span class="pre">get_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderMatch.get_border" title="Link to this definition">¶</a></dt>
+<dd><p>a Marker for the border</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderMatch.with_match_radius">
+<span class="sig-name descname"><span class="pre">with_match_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderMatch.with_match_radius" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.BorderMatch.with_border">
+<span class="sig-name descname"><span class="pre">with_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.BorderMatch.with_border" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Triangle.Match">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Triangle.</span></span><span class="sig-name descname"><span class="pre">Match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Match" title="Link to this definition">¶</a></dt>
+<dd><p>Match the color of the line</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.Match.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Match.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Match the color of the line
+:param radius: radius is how big it is (as a percentage of segment length)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.Match.get_radius">
+<span class="sig-name descname"><span class="pre">get_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Match.get_radius" title="Link to this definition">¶</a></dt>
+<dd><p>radius is how big it is (as a percentage of segment length)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.Match.with_radius">
+<span class="sig-name descname"><span class="pre">with_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Match.with_radius" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Triangle.None_">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Triangle.</span></span><span class="sig-name descname"><span class="pre">None_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.None_" title="Link to this definition">¶</a></dt>
+<dd><p>None, simply don’t draw them</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.None_.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.None_.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>None, simply don’t draw them</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Triangle.Marker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Triangle.</span></span><span class="sig-name descname"><span class="pre">Marker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Marker" title="Link to this definition">¶</a></dt>
+<dd><p>Specifier for how to draw a shape (not necessarily a circle)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.Marker.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Marker.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Specifier for how to draw a shape (not necessarily a circle)
+:param color: The color to draw it with
+:param radius: The radius of the shape</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.Marker.get_color">
+<span class="sig-name descname"><span class="pre">get_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Marker.get_color" title="Link to this definition">¶</a></dt>
+<dd><p>The color to draw it with</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.Marker.get_radius">
+<span class="sig-name descname"><span class="pre">get_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Marker.get_radius" title="Link to this definition">¶</a></dt>
+<dd><p>The radius of the shape</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.Marker.with_color">
+<span class="sig-name descname"><span class="pre">with_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Marker.with_color" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Triangle.Marker.with_radius">
+<span class="sig-name descname"><span class="pre">with_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Triangle.Marker.with_radius" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<p id="module-GridPatternOptions">Struct that holds the different variations of GridPatterns</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="GridPatternOptions.Changing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GridPatternOptions.</span></span><span class="sig-name descname"><span class="pre">Changing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Changing" title="Link to this definition">¶</a></dt>
+<dd><p>Changes what pattern renderer to use when finding an introspect or retrospect pattern
+That way you can change colors/renderers for embedded patterns</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Changing.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Intersections.AnyIntersections</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Lines.AnyLines</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intros</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#AngleSig" title="AngleSig"><span class="pre">AngleSig</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retros</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#AngleSig" title="AngleSig"><span class="pre">AngleSig</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Changing.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Changes what pattern renderer to use when finding an introspect or retrospect pattern
+That way you can change colors/renderers for embedded patterns
+:param variations: Variations to use, starts at the first and goes up when it reaches an intro, goes down when reaching a retro
+:param intros: Vec of the angle_sigs of intro patterns
+:param retros: Vec of angle_sigs of retro patterns</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Changing.get_variations">
+<span class="sig-name descname"><span class="pre">get_variations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Changing.get_variations" title="Link to this definition">¶</a></dt>
+<dd><p>Variations to use, starts at the first and goes up when it reaches an intro, goes down when reaching a retro</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Changing.get_intros">
+<span class="sig-name descname"><span class="pre">get_intros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Changing.get_intros" title="Link to this definition">¶</a></dt>
+<dd><p>Vec of the angle_sigs of intro patterns</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Changing.get_retros">
+<span class="sig-name descname"><span class="pre">get_retros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Changing.get_retros" title="Link to this definition">¶</a></dt>
+<dd><p>Vec of angle_sigs of retro patterns</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Changing.with_variations">
+<span class="sig-name descname"><span class="pre">with_variations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Intersections.AnyIntersections</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Lines.AnyLines</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Changing.with_variations" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Changing.with_intros">
+<span class="sig-name descname"><span class="pre">with_intros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intros</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#AngleSig" title="AngleSig"><span class="pre">AngleSig</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Changing.with_intros" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Changing.with_retros">
+<span class="sig-name descname"><span class="pre">with_retros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retros</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#AngleSig" title="AngleSig"><span class="pre">AngleSig</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Changing.with_retros" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GridPatternOptions.Uniform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GridPatternOptions.</span></span><span class="sig-name descname"><span class="pre">Uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Uniform" title="Link to this definition">¶</a></dt>
+<dd><p>Uniform means that all patterns will be rendered in the same way
+(This excludes the difference with PatternVariant)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Uniform.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Intersections.AnyIntersections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Lines.AnyLines</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Uniform.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Uniform means that all patterns will be rendered in the same way
+(This excludes the difference with PatternVariant)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Uniform.get_intersections">
+<span class="sig-name descname"><span class="pre">get_intersections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Uniform.get_intersections" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Uniform.get_lines">
+<span class="sig-name descname"><span class="pre">get_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Uniform.get_lines" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Uniform.with_intersections">
+<span class="sig-name descname"><span class="pre">with_intersections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Intersections.AnyIntersections</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Uniform.with_intersections" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Uniform.with_lines">
+<span class="sig-name descname"><span class="pre">with_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Lines.AnyLines</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Uniform.with_lines" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GridPatternOptions.Color">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GridPatternOptions.</span></span><span class="sig-name descname"><span class="pre">Color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color" title="Link to this definition">¶</a></dt>
+<dd><p>Color struct, using RGBA</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Color struct, using RGBA
+:param r: Amount of red (0-255)
+:param g: Amount of red (0-255)
+:param b: Amount of red (0-255)
+:param a: Amount of red (0-255)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.get_r">
+<span class="sig-name descname"><span class="pre">get_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.get_r" title="Link to this definition">¶</a></dt>
+<dd><p>Amount of red (0-255)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.get_g">
+<span class="sig-name descname"><span class="pre">get_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.get_g" title="Link to this definition">¶</a></dt>
+<dd><p>Amount of red (0-255)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.get_b">
+<span class="sig-name descname"><span class="pre">get_b</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.get_b" title="Link to this definition">¶</a></dt>
+<dd><p>Amount of red (0-255)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.get_a">
+<span class="sig-name descname"><span class="pre">get_a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.get_a" title="Link to this definition">¶</a></dt>
+<dd><p>Amount of red (0-255)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.with_r">
+<span class="sig-name descname"><span class="pre">with_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.with_r" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.with_g">
+<span class="sig-name descname"><span class="pre">with_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.with_g" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.with_b">
+<span class="sig-name descname"><span class="pre">with_b</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.with_b" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GridPatternOptions.Color.with_a">
+<span class="sig-name descname"><span class="pre">with_a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GridPatternOptions.Color.with_a" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class" id="module-Lines">
+<dt class="sig sig-object py" id="Lines.SegmentColors">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Lines.</span></span><span class="sig-name descname"><span class="pre">SegmentColors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.SegmentColors" title="Link to this definition">¶</a></dt>
+<dd><p>Changes colors whenever it reaches an intersection that’s already had the current color</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.SegmentColors.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triangles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Triangle.AnyTriangle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collisions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CollisionOption.AnyCollisionOption</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.SegmentColors.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Changes colors whenever it reaches an intersection that’s already had the current color
+:param colors: Colors to use
+:param triangles: Arrows/Triangles to draw at the start and when switching between colors
+:param collisions: Options for impossible patterns (when you get overlapping segments)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.SegmentColors.get_colors">
+<span class="sig-name descname"><span class="pre">get_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.SegmentColors.get_colors" title="Link to this definition">¶</a></dt>
+<dd><p>Colors to use</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.SegmentColors.get_triangles">
+<span class="sig-name descname"><span class="pre">get_triangles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.SegmentColors.get_triangles" title="Link to this definition">¶</a></dt>
+<dd><p>Arrows/Triangles to draw at the start and when switching between colors</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.SegmentColors.get_collisions">
+<span class="sig-name descname"><span class="pre">get_collisions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.SegmentColors.get_collisions" title="Link to this definition">¶</a></dt>
+<dd><p>Options for impossible patterns (when you get overlapping segments)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.SegmentColors.with_colors">
+<span class="sig-name descname"><span class="pre">with_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.SegmentColors.with_colors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.SegmentColors.with_triangles">
+<span class="sig-name descname"><span class="pre">with_triangles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triangles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Triangle.AnyTriangle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.SegmentColors.with_triangles" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.SegmentColors.with_collisions">
+<span class="sig-name descname"><span class="pre">with_collisions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collisions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CollisionOption.AnyCollisionOption</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.SegmentColors.with_collisions" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Lines.Gradient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Lines.</span></span><span class="sig-name descname"><span class="pre">Gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Gradient" title="Link to this definition">¶</a></dt>
+<dd><p>Gradient slowly switches between colors (gradient)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Gradient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments_per_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Gradient.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Gradient slowly switches between colors (gradient)
+:param colors: Vec of colors to draw gradients between
+:param segments_per_color: Minimum number of segments before adding another color to switch between
+:param bent: Whether or not to have the segments bend around corners</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Gradient.get_colors">
+<span class="sig-name descname"><span class="pre">get_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Gradient.get_colors" title="Link to this definition">¶</a></dt>
+<dd><p>Vec of colors to draw gradients between
+If the vec only has 1 item, it’s treated as Monocolor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Gradient.get_segments_per_color">
+<span class="sig-name descname"><span class="pre">get_segments_per_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Gradient.get_segments_per_color" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum number of segments before adding another color to switch between
+Eg. if segments_per_color = 10,
+1-9 segments - maximum of 2 colors
+10-19 segments - maximum of 3 colors,</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Gradient.get_bent">
+<span class="sig-name descname"><span class="pre">get_bent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Gradient.get_bent" title="Link to this definition">¶</a></dt>
+<dd><p>Whether or not to have the segments bend around corners</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Gradient.with_colors">
+<span class="sig-name descname"><span class="pre">with_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Gradient.with_colors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Gradient.with_segments_per_color">
+<span class="sig-name descname"><span class="pre">with_segments_per_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments_per_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Gradient.with_segments_per_color" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Gradient.with_bent">
+<span class="sig-name descname"><span class="pre">with_bent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Gradient.with_bent" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Lines.Monocolor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Lines.</span></span><span class="sig-name descname"><span class="pre">Monocolor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Monocolor" title="Link to this definition">¶</a></dt>
+<dd><p>Monocolor draws the lines in a single color
+if bent = true, the corners will bend on the intersections</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Monocolor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Monocolor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Monocolor draws the lines in a single color
+if bent = true, the corners will bend on the intersections
+:param color: Color to draw the lines with
+:param bent: Whether or not it bends at intersection points</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Monocolor.get_color">
+<span class="sig-name descname"><span class="pre">get_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Monocolor.get_color" title="Link to this definition">¶</a></dt>
+<dd><p>Color to draw the lines with</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Monocolor.get_bent">
+<span class="sig-name descname"><span class="pre">get_bent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Monocolor.get_bent" title="Link to this definition">¶</a></dt>
+<dd><p>Whether or not it bends at intersection points</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Monocolor.with_color">
+<span class="sig-name descname"><span class="pre">with_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Monocolor.with_color" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.Monocolor.with_bent">
+<span class="sig-name descname"><span class="pre">with_bent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.Monocolor.with_bent" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Lines.GridOptions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Lines.</span></span><span class="sig-name descname"><span class="pre">GridOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.GridOptions" title="Link to this definition">¶</a></dt>
+<dd><p>Main struct for all pattern rendering options</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.GridOptions.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_thickness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GridPatternOptions.AnyGridPatternOptions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_dot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point.AnyPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.GridOptions.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Main struct for all pattern rendering options
+:param line_thickness: Thickness of line in relation to distance between points
+:param pattern_options: Further options for how to render each pattern
+:param center_dot: Optional point to place in the center of each pattern (helps with determining pattern size at a glance)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.GridOptions.get_line_thickness">
+<span class="sig-name descname"><span class="pre">get_line_thickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.GridOptions.get_line_thickness" title="Link to this definition">¶</a></dt>
+<dd><p>Thickness of line in relation to distance between points
+eg. if the line_thickness = 0.1, and the distance between points is 10 pixels,
+then the line_thickness would be 1 pixel</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.GridOptions.get_pattern_options">
+<span class="sig-name descname"><span class="pre">get_pattern_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.GridOptions.get_pattern_options" title="Link to this definition">¶</a></dt>
+<dd><p>Further options for how to render each pattern</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.GridOptions.get_center_dot">
+<span class="sig-name descname"><span class="pre">get_center_dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.GridOptions.get_center_dot" title="Link to this definition">¶</a></dt>
+<dd><p>Optional point to place in the center of each pattern (helps with determining pattern size at a glance)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.GridOptions.with_line_thickness">
+<span class="sig-name descname"><span class="pre">with_line_thickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_thickness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.GridOptions.with_line_thickness" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.GridOptions.with_pattern_options">
+<span class="sig-name descname"><span class="pre">with_pattern_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GridPatternOptions.AnyGridPatternOptions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.GridOptions.with_pattern_options" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Lines.GridOptions.with_center_dot">
+<span class="sig-name descname"><span class="pre">with_center_dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_dot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point.AnyPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Lines.GridOptions.with_center_dot" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<p id="module-Point">Options for drawing points at the grid points/intersections</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="Point.Double">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Point.</span></span><span class="sig-name descname"><span class="pre">Double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Double" title="Link to this definition">¶</a></dt>
+<dd><p>Draws an inner dot dotand outer dot (or a point with a border)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.Double.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Double.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draws an inner dot dotand outer dot (or a point with a border)
+:param inner: Marker specifying radius and color of the inner point
+:param outer: Marker specifying radius and color of the outer point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.Double.get_inner">
+<span class="sig-name descname"><span class="pre">get_inner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Double.get_inner" title="Link to this definition">¶</a></dt>
+<dd><p>Marker specifying radius and color of the inner point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.Double.get_outer">
+<span class="sig-name descname"><span class="pre">get_outer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Double.get_outer" title="Link to this definition">¶</a></dt>
+<dd><p>Marker specifying radius and color of the outer point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.Double.with_inner">
+<span class="sig-name descname"><span class="pre">with_inner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Double.with_inner" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.Double.with_outer">
+<span class="sig-name descname"><span class="pre">with_outer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Double.with_outer" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Point.Single">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Point.</span></span><span class="sig-name descname"><span class="pre">Single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Single" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a single dot</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.Single.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Single.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a single dot
+:param marker: Marker specifying radius and color of point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.Single.get_marker">
+<span class="sig-name descname"><span class="pre">get_marker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Single.get_marker" title="Link to this definition">¶</a></dt>
+<dd><p>Marker specifying radius and color of point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.Single.with_marker">
+<span class="sig-name descname"><span class="pre">with_marker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.Single.with_marker" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Point.None_">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Point.</span></span><span class="sig-name descname"><span class="pre">None_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.None_" title="Link to this definition">¶</a></dt>
+<dd><p>Doesn’t draw any points</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Point.None_.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Point.None_.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Doesn’t draw any points</p>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-Intersections">How to draw all the points in a pattern, including start, end, and middle points</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="Intersections.EndsAndMiddle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Intersections.</span></span><span class="sig-name descname"><span class="pre">EndsAndMiddle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.EndsAndMiddle" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a different point for the start, end, and middle</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.EndsAndMiddle.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EndPoint.AnyEndPoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point.AnyPoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EndPoint.AnyEndPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.EndsAndMiddle.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a different point for the start, end, and middle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.EndsAndMiddle.get_start">
+<span class="sig-name descname"><span class="pre">get_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.EndsAndMiddle.get_start" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.EndsAndMiddle.get_middle">
+<span class="sig-name descname"><span class="pre">get_middle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.EndsAndMiddle.get_middle" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.EndsAndMiddle.get_end">
+<span class="sig-name descname"><span class="pre">get_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.EndsAndMiddle.get_end" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.EndsAndMiddle.with_start">
+<span class="sig-name descname"><span class="pre">with_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EndPoint.AnyEndPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.EndsAndMiddle.with_start" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.EndsAndMiddle.with_middle">
+<span class="sig-name descname"><span class="pre">with_middle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point.AnyPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.EndsAndMiddle.with_middle" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.EndsAndMiddle.with_end">
+<span class="sig-name descname"><span class="pre">with_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EndPoint.AnyEndPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.EndsAndMiddle.with_end" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Intersections.UniformPoints">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Intersections.</span></span><span class="sig-name descname"><span class="pre">UniformPoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.UniformPoints" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the same point for everything, including start and end</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.UniformPoints.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point.AnyPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.UniformPoints.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the same point for everything, including start and end</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.UniformPoints.get_point">
+<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.UniformPoints.get_point" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.UniformPoints.with_point">
+<span class="sig-name descname"><span class="pre">with_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point.AnyPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.UniformPoints.with_point" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Intersections.Nothing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Intersections.</span></span><span class="sig-name descname"><span class="pre">Nothing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.Nothing" title="Link to this definition">¶</a></dt>
+<dd><p>Doesn’t draw any points</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Intersections.Nothing.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Intersections.Nothing.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Doesn’t draw any points</p>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-EndPoint">Specifier for how to draw the start and end points on a pattern</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="EndPoint.BorderedMatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EndPoint.</span></span><span class="sig-name descname"><span class="pre">BorderedMatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.BorderedMatch" title="Link to this definition">¶</a></dt>
+<dd><p>Draw a point that matches the starting/ending color with a border</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.BorderedMatch.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.BorderedMatch.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draw a point that matches the starting/ending color with a border</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.BorderedMatch.get_match_radius">
+<span class="sig-name descname"><span class="pre">get_match_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.BorderedMatch.get_match_radius" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.BorderedMatch.get_border">
+<span class="sig-name descname"><span class="pre">get_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.BorderedMatch.get_border" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.BorderedMatch.with_match_radius">
+<span class="sig-name descname"><span class="pre">with_match_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.BorderedMatch.with_match_radius" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.BorderedMatch.with_border">
+<span class="sig-name descname"><span class="pre">with_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Triangle.Marker" title="Triangle.Marker"><span class="pre">Marker</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.BorderedMatch.with_border" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="EndPoint.Match">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EndPoint.</span></span><span class="sig-name descname"><span class="pre">Match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Match" title="Link to this definition">¶</a></dt>
+<dd><p>Draw a point that matches the starting/ending color</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Match.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Match.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draw a point that matches the starting/ending color</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Match.get_radius">
+<span class="sig-name descname"><span class="pre">get_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Match.get_radius" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Match.with_radius">
+<span class="sig-name descname"><span class="pre">with_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Match.with_radius" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="EndPoint.Point">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EndPoint.</span></span><span class="sig-name descname"><span class="pre">Point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Point" title="Link to this definition">¶</a></dt>
+<dd><p>Draw a normal point</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Point.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point.AnyPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Point.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draw a normal point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Point.get_point">
+<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Point.get_point" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Point.with_point">
+<span class="sig-name descname"><span class="pre">with_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point.AnyPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Point.with_point" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="EndPoint.SquareGrid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EndPoint.</span></span><span class="sig-name descname"><span class="pre">SquareGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.SquareGrid" title="Link to this definition">¶</a></dt>
+<dd><p>Grid of fixed sized tiles where the patterns are automatically scaled to fit within.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.SquareGrid.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patterns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#OverloadOptions.PatternVariant" title="OverloadOptions.PatternVariant"><span class="pre">PatternVariant</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.SquareGrid.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Creats a grid of fixed size tiles where the patterns are automatically scaled to fit within.
+:param patterns: Array of patterns to fit on to the grid
+:param max_width: Maximum number of tiles to lay down horizontally before wrapping around
+:param max_scale: Maximum scale of patterns in each tile (1 is no limit)
+:param x_pad: amount of horizontal padding between tiles (measured in scale*x_pad pixels)
+:param y_pad: amount of vertical padding between tiles (measured in scale*y_pad pixels)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="EndPoint.HexGrid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EndPoint.</span></span><span class="sig-name descname"><span class="pre">HexGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.HexGrid" title="Link to this definition">¶</a></dt>
+<dd><p>A hexagonal grid where patterns are all rendered to fit on the grid.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.HexGrid.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patterns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#OverloadOptions.PatternVariant" title="OverloadOptions.PatternVariant"><span class="pre">PatternVariant</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.HexGrid.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a hexagonal grid where patterns are all rendered to fit on the grid.
+:param patterns: Array of patterns to fit on to the grid
+:param max_width: The maximum width of the grid (in grid points) before wrapping around</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="EndPoint.Grid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EndPoint.</span></span><span class="sig-name descname"><span class="pre">Grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Grid" title="Link to this definition">¶</a></dt>
+<dd><p>Grid parent class for rendering grids
+Current grids implemented: HexGrid, SquareGrid</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Grid.draw_png">
+<span class="sig-name descname"><span class="pre">draw_png</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Lines.GridOptions" title="Lines.GridOptions"><span class="pre">GridOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Grid.draw_png" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the grid and returns a PNG as an array of bytes
+:param scale: (HexGrid) distance between points in pixels, (SquareGrid) size of tiles
+:param options: The options for how to draw the patterns
+:param padding: Optional padding to put around the grid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Grid.draw_to_file">
+<span class="sig-name descname"><span class="pre">draw_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Lines.GridOptions" title="Lines.GridOptions"><span class="pre">GridOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Grid.draw_to_file" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the grid and saves it to a file
+:param file_name: path to the file you want to save it as
+:param scale: (HexGrid) distance between points in pixels, (SquareGrid) size of tiles
+:param options: The options for how to draw the patterns
+:param padding: Optional padding to put around the grid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EndPoint.Grid.get_bound_scale">
+<span class="sig-name descname"><span class="pre">get_bound_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#Lines.GridOptions" title="Lines.GridOptions"><span class="pre">GridOptions</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EndPoint.Grid.get_bound_scale" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the max scale that will fit within the given image size
+:param bound: x and y maximum sizes
+:param options: The size of padding or the GridOptions to determine it automatically</p>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-CollisionOption">Options for drawing overlapping segments (impossible patterns)</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="CollisionOption.OverloadedParallel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CollisionOption.</span></span><span class="sig-name descname"><span class="pre">OverloadedParallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.OverloadedParallel" title="Link to this definition">¶</a></dt>
+<dd><p>Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.OverloadedParallel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OverloadOptions.AnyOverloadOptions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.OverloadedParallel.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Same as CollisionOption.ParallelLines except with an escape when you get too many overlaps
+:param max_line: number of overlapping segments/lines before using the overload option
+:param overload: Rendering option for when reaching too many parallel lines</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.OverloadedParallel.get_max_line">
+<span class="sig-name descname"><span class="pre">get_max_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.OverloadedParallel.get_max_line" title="Link to this definition">¶</a></dt>
+<dd><p>number of overlapping segments/lines before using the overload option</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.OverloadedParallel.get_overload">
+<span class="sig-name descname"><span class="pre">get_overload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.OverloadedParallel.get_overload" title="Link to this definition">¶</a></dt>
+<dd><p>Rendering option for when reaching too many parallel lines</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.OverloadedParallel.with_max_line">
+<span class="sig-name descname"><span class="pre">with_max_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.OverloadedParallel.with_max_line" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.OverloadedParallel.with_overload">
+<span class="sig-name descname"><span class="pre">with_overload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OverloadOptions.AnyOverloadOptions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.OverloadedParallel.with_overload" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="CollisionOption.ParallelLines">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CollisionOption.</span></span><span class="sig-name descname"><span class="pre">ParallelLines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.ParallelLines" title="Link to this definition">¶</a></dt>
+<dd><p>Draws each of the segments as smaller, parallel lines all next to eachother</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.ParallelLines.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.ParallelLines.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draws each of the segments as smaller, parallel lines all next to eachother</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="CollisionOption.MatchedDashes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CollisionOption.</span></span><span class="sig-name descname"><span class="pre">MatchedDashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.MatchedDashes" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the line as a set of dashes where the dash marks match the colors of the overlapping lines</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.MatchedDashes.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.MatchedDashes.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the line as a set of dashes where the dash marks match the colors of the overlapping lines</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="CollisionOption.Dashes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CollisionOption.</span></span><span class="sig-name descname"><span class="pre">Dashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.Dashes" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the first segment and then dashes of the given color for the rest</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.Dashes.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.Dashes.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the first segment and then dashes of the given color for the rest
+:param color: Color of dashes to draw with</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.Dashes.get_color">
+<span class="sig-name descname"><span class="pre">get_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.Dashes.get_color" title="Link to this definition">¶</a></dt>
+<dd><p>Color of dashes to draw with</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CollisionOption.Dashes.with_color">
+<span class="sig-name descname"><span class="pre">with_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GridPatternOptions.Color" title="GridPatternOptions.Color"><span class="pre">Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CollisionOption.Dashes.with_color" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">hex_renderer_python</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, JohnDog3112.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

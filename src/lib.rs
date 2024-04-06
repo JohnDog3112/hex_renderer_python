@@ -1,5 +1,5 @@
-use hex_renderer::{pattern_utils::Angle, options::Color};
-use interface_macros::py_gen;
+use hex_renderer::{pattern_utils::Angle};
+
 use pyo3::{pymodule, Python, types::PyModule, PyResult};
 
 pub mod classes;
@@ -27,8 +27,36 @@ fn hex_renderer_python(py: Python, m: &PyModule) -> PyResult<()> {
     
     classes::grids::initialize_classes(m)?;
 
+    test_fn(&<classes::color::PyColor as ::interface_macros::PyType>::path_string);
+
     Ok(())
 }
+
+
+/*fn test_fn<T: Fn() -> String + Send>(hi: T) -> String {
+    hi()
+}*/
+
+/*fn test_fn(hi: &'static (dyn Send + Fn() -> String)) -> String {
+    hi()
+}*/
+
+/*#[::interface_macros::py_type_gen(nested = ModuleTest)]
+#[pyo3::pyclass]
+struct ItemOne;
+#[::interface_macros::py_type_gen(nested = ModuleTest)]
+#[pyo3::pyclass]
+struct ItemTwo;
+#[::interface_macros::py_type_gen(nested = ModuleTest)]
+#[pyo3::pyclass]
+struct ItemThree;
+
+
+#[::interface_macros::py_type_gen(module = "ModuleTest", nested = ModuleTestTwo, union = ("hello", [ItemOne, ItemTwo, ItemThree]))]
+struct ModuleTest;
+
+#[::interface_macros::py_type_gen(module = "ModuleTestTwo")]
+struct ModuleTestTwo;*/
 
 
 /*#[::pyo3::pyclass]
