@@ -51,11 +51,11 @@ pub mod tests {
     use std::{fs::{File, self}, io::Write};
 
     const INIT_PY: &str = "
-from .hex_renderer_python import *
+from .hex_renderer_py import *
 
-__doc__ = hex_renderer_python.__doc__
-if hasattr(hex_renderer_python, \"__all__\"):
-    __all__ = hex_renderer_python.__all__
+__doc__ = hex_renderer_py.__doc__
+if hasattr(hex_renderer_py, \"__all__\"):
+    __all__ = hex_renderer_py.__all__
 
 ";
 
