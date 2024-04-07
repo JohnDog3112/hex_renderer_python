@@ -25,8 +25,9 @@ jobs:
 
       - name: Install Dependencies
         run: pip install -e '.[dev]'
-        
+      
       - run: cd docs
+      - run: ls
 
       - name: Build Website
         run: make html
