@@ -11,6 +11,8 @@ Welcome to hex_renderer_py's documentation!
    :caption: Contents:
 
    autodoc/index
+   notebooks/Palettes
+   notebooks/PatternVariant
 
 
 

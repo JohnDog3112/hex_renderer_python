@@ -1,4 +1,4 @@
-from hex_renderer_py import GridOptions, GridPatternOptions, Point, Color, Lines, Intersections, Marker, AngleSig, PatternVariant, HexGrid, EndPoint
+from hex_renderer_py import GridOptions, GridPatternOptions, Point, Color, Lines, Intersections, Marker, AngleSig, PatternVariant, HexGrid, Triangle, CollisionOption, EndPoint
 
 intersections = Intersections.UniformPoints(
     point=Point.Single(
@@ -77,6 +77,7 @@ patterns = [
     PatternVariant("NORTH_EAST", "qqd"),
     PatternVariant("EAST", "eee")
 ]
+
 
 hex_grid = HexGrid(patterns, 50)
 

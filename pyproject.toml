@@ -22,7 +22,8 @@ source = "https://github.com/JohnDog3112/hex_renderer_python"
 [project.optional-dependencies]
 dev = [
     "Sphinx",
-    "sphinx-rtd-theme"
+    "sphinx-rtd-theme",
+    "myst_nb"
 ]
 [tool.maturin]
 features = ["pyo3/extension-module"]
