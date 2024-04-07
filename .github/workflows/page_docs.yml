@@ -22,10 +22,8 @@ jobs:
       - name: Generate API Docs
         run: cargo test
 
-      - name: Build Renderer
-        run: |
-          pip install maturin
-          maturin develop --release
+      - name: Grab Last Renderer Release
+        run: pip install hex_renderer_py
 
       - name: Build Website
         run: |
