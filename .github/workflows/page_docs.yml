@@ -16,14 +16,21 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Setup VirtualEnv
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+        
       - name: Install Dependencies
         run: pip install -e '.[dev]'
 
       - name: Generate API Docs
         run: cargo test
 
-      - name: Grab Last Renderer Release
-        run: pip install hex_renderer_py
+      - name: Compile Renderer
+        run: |
+          pip install maturin
+          maturin develop --release
 
       - name: Build Website
         run: |
