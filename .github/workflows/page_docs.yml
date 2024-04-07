@@ -16,18 +16,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      #- name: Install Nox
-      #  run: uv pip install --system nox
-
-      #- name: Generate docs
-      #  timeout-minutes: 5
-      #  run: nox --session docs -- build
-
       - name: Install Dependencies
         run: pip install -e '.[dev]'
 
       - name: Build Website
         run: |
+          cargo test
           cd docs
           make html
       
