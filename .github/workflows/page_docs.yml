@@ -25,12 +25,11 @@ jobs:
 
       - name: Install Dependencies
         run: pip install -e '.[dev]'
-      
-      - run: cd docs
-      - run: ls
 
       - name: Build Website
-        run: make html
+        run: |
+          cd docs
+          make html
       
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
