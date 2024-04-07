@@ -23,7 +23,9 @@ jobs:
         run: cargo test
 
       - name: Build Renderer
-        run: maturin develop --release
+        run: |
+          pip install maturin
+          maturin develop --release
 
       - name: Build Website
         run: |
