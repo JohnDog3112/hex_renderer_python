@@ -5,7 +5,7 @@ use quote::{quote, ToTokens};
 
 use crate::Arguments;
 
-pub fn py_gen_impl(args: Arguments, input: Item) -> Result<TokenStream> {
+pub(crate) fn py_gen_impl(args: Arguments, input: Item) -> Result<TokenStream> {
 
     match input {
         Item::Enum(enu) => {

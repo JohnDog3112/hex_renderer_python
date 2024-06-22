@@ -7,7 +7,7 @@ use syn::{Item, Result, Error, ItemFn, spanned::Spanned, Ident, Type, ReturnType
 use crate::TypeArgs;
 
 
-pub fn py_type_gen_impl(args: TypeArgs, input: Item) -> Result<TokenStream> {
+pub(crate) fn py_type_gen_impl(args: TypeArgs, input: Item) -> Result<TokenStream> {
     match input {
         Item::Fn(func) => type_fn(args, func),
         Item::Struct(struc) => type_struct(args, struc),
