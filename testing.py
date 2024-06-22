@@ -14,6 +14,9 @@ monocolor = GridOptions(
 
 grid = HexGrid(patterns, 50)
 
+SquareGrid()
+
+SquareGrid()
 print("Segment")
 display(Image(data=bytes(grid.draw_png(50, segment))))
 
