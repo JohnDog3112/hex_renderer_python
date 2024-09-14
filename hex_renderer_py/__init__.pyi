@@ -1,49 +1,3 @@
-class Color(object):
-	"""
-	Color struct, using RGBA
-	"""
-	def __init__(self, r: int, g: int, b: int, a: int) -> None:
-		"""
-		Color struct, using RGBA
-		:param r: Amount of red (0-255)
-		:param g: Amount of red (0-255)
-		:param b: Amount of red (0-255)
-		:param a: Amount of red (0-255)
-		"""
-		...
-	@property
-	def r(self) -> int:
-		"""
-		Amount of red (0-255)
-		"""
-		...
-	@property
-	def g(self) -> int:
-		"""
-		Amount of red (0-255)
-		"""
-		...
-	@property
-	def b(self) -> int:
-		"""
-		Amount of red (0-255)
-		"""
-		...
-	@property
-	def a(self) -> int:
-		"""
-		Amount of red (0-255)
-		"""
-		...
-	def with_r(self, r: int) -> Color:
-		...
-	def with_g(self, g: int) -> Color:
-		...
-	def with_b(self, b: int) -> Color:
-		...
-	def with_a(self, a: int) -> Color:
-		...
-	...
 class Intersections:
 	"""
 	How to draw all the points in a pattern, including start, end, and middle points
@@ -100,70 +54,143 @@ class Intersections:
 			...
 		...
 	...
-class GridPatternOptions:
+class PatternVariant(object):
 	"""
-	Struct that holds the different variations of GridPatterns
+	A hexpattern that can be rendered on a grid
 	"""
-	AnyGridPatternOptions = GridPatternOptions.Uniform | GridPatternOptions.Changing
-	class Changing(object):
+	def __init__(self, direction: str, angle_sigs: str, great_spell: None | bool = None) -> None:
 		"""
-		Changes what pattern renderer to use when finding an introspect or retrospect pattern
-		 That way you can change colors/renderers for embedded patterns
+		Creates a new PatternVariant
+		 :param direction: Starting direction (North_East, East, South_East, South_West, West, North_West)
+		 :param angle_sigs: String of angle sigs (accepted characters: [q,w,e,d,s,a])
+		 :param great_spell: Whether or not it's a great spell (Default = false)
 		"""
-		def __init__(self, variations: list[tuple[Intersections.AnyIntersections, Lines.AnyLines]], intros: list[AngleSig], retros: list[AngleSig]) -> None:
+		...
+	@property
+	def direction(self) -> str:
+		"""
+		Gets the starting direction of the pattern 
+		"""
+		...
+	@property
+	def angle_sigs(self) -> str:
+		"""
+		Gets the angle_sigs of the pattern
+		"""
+		...
+	@property
+	def great_spell(self) -> bool:
+		"""
+		Gets whether or not the pattern is a great spell
+		"""
+		...
+	...
+class AngleSig(object):
+	"""
+	Angle sigs of a pattern (ex. qqq)
+	"""
+	def __init__(self, sigs: str) -> None:
+		"""
+		Make a new angle sig
+		 :param sigs: String of sigs (ex. qqq)
+		"""
+		...
+	def get_sigs(self) -> str:
+		"""
+		 gets the sigs as a string
+		"""
+		...
+	def __repr__(self) -> str:
+		...
+	...
+class Triangle:
+	"""
+	Options for drawing the triangle/arrow between color changes on the Segment Renderer
+	"""
+	AnyTriangle = Triangle.None_ | Triangle.Match | Triangle.BorderMatch | Triangle.BorderStartMatch
+	class BorderStartMatch(object):
+		"""
+		Same as Triangle.BorderMatch except with an extra triangle right after the start point
+		"""
+		def __init__(self, match_radius: float, border: Marker) -> None:
 			"""
-			Changes what pattern renderer to use when finding an introspect or retrospect pattern
-			 That way you can change colors/renderers for embedded patterns
-			:param variations: Variations to use, starts at the first and goes up when it reaches an intro, goes down when reaching a retro
-			:param intros: Vec of the angle_sigs of intro patterns
-			:param retros: Vec of angle_sigs of retro patterns
+			Same as Triangle.BorderMatch except with an extra triangle right after the start point
+			:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
+			:param border: a Marker for the border
 			"""
 			...
 		@property
-		def variations(self) -> list[tuple[Intersections.AnyIntersections, Lines.AnyLines]]:
+		def match_radius(self) -> float:
 			"""
-			Variations to use, starts at the first and goes up when it reaches an intro, goes down when reaching a retro
-			"""
-			...
-		@property
-		def intros(self) -> list[AngleSig]:
-			"""
-			Vec of the angle_sigs of intro patterns
+			radius of how big the match triangle is (as a percentage of segment length)
 			"""
 			...
 		@property
-		def retros(self) -> list[AngleSig]:
+		def border(self) -> Marker:
 			"""
-			Vec of angle_sigs of retro patterns
+			a Marker for the border
 			"""
 			...
-		def with_variations(self, variations: list[tuple[Intersections.AnyIntersections, Lines.AnyLines]]) -> GridPatternOptions.Changing:
+		def with_match_radius(self, match_radius: float) -> Triangle.BorderStartMatch:
 			...
-		def with_intros(self, intros: list[AngleSig]) -> GridPatternOptions.Changing:
-			...
-		def with_retros(self, retros: list[AngleSig]) -> GridPatternOptions.Changing:
+		def with_border(self, border: Marker) -> Triangle.BorderStartMatch:
 			...
 		...
-	class Uniform(object):
+	class BorderMatch(object):
 		"""
-		Uniform means that all patterns will be rendered in the same way
-		 (This excludes the difference with PatternVariant)
+		Same as Triangle.Match except with an extra border around it
 		"""
-		def __init__(self, intersections: Intersections.AnyIntersections, lines: Lines.AnyLines) -> None:
+		def __init__(self, match_radius: float, border: Marker) -> None:
 			"""
-			Uniform means that all patterns will be rendered in the same way
-			 (This excludes the difference with PatternVariant)
+			Same as Triangle.Match except with an extra border around it
+			:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
+			:param border: a Marker for the border
 			"""
 			...
 		@property
-		def intersections(self) -> Intersections.AnyIntersections:
+		def match_radius(self) -> float:
+			"""
+			radius of how big the match triangle is (as a percentage of segment length)
+			"""
 			...
 		@property
-		def lines(self) -> Lines.AnyLines:
+		def border(self) -> Marker:
+			"""
+			a Marker for the border
+			"""
 			...
-		def with_intersections(self, intersections: Intersections.AnyIntersections) -> GridPatternOptions.Uniform:
+		def with_match_radius(self, match_radius: float) -> Triangle.BorderMatch:
 			...
-		def with_lines(self, lines: Lines.AnyLines) -> GridPatternOptions.Uniform:
+		def with_border(self, border: Marker) -> Triangle.BorderMatch:
+			...
+		...
+	class Match(object):
+		"""
+		Match the color of the line
+		"""
+		def __init__(self, radius: float) -> None:
+			"""
+			Match the color of the line
+			:param radius: radius is how big it is (as a percentage of segment length)
+			"""
+			...
+		@property
+		def radius(self) -> float:
+			"""
+			radius is how big it is (as a percentage of segment length)
+			"""
+			...
+		def with_radius(self, radius: float) -> Triangle.Match:
+			...
+		...
+	class None_(object):
+		"""
+		None, simply don't draw them
+		"""
+		def __init__(self) -> None:
+			"""
+			None, simply don't draw them
+			"""
 			...
 		...
 	...
@@ -278,144 +305,106 @@ class Lines:
 			...
 		...
 	...
-class Triangle:
+class EndPoint:
 	"""
-	Options for drawing the triangle/arrow between color changes on the Segment Renderer
+	Specifier for how to draw the start and end points on a pattern
 	"""
-	AnyTriangle = Triangle.None_ | Triangle.Match | Triangle.BorderMatch | Triangle.BorderStartMatch
-	class BorderStartMatch(object):
+	AnyEndPoint = EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch
+	class BorderedMatch(object):
 		"""
-		Same as Triangle.BorderMatch except with an extra triangle right after the start point
+		Draw a point that matches the starting/ending color with a border
 		"""
 		def __init__(self, match_radius: float, border: Marker) -> None:
 			"""
-			Same as Triangle.BorderMatch except with an extra triangle right after the start point
-			:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
-			:param border: a Marker for the border
+			Draw a point that matches the starting/ending color with a border
 			"""
 			...
 		@property
 		def match_radius(self) -> float:
-			"""
-			radius of how big the match triangle is (as a percentage of segment length)
-			"""
 			...
 		@property
 		def border(self) -> Marker:
-			"""
-			a Marker for the border
-			"""
 			...
-		def with_match_radius(self, match_radius: float) -> Triangle.BorderStartMatch:
+		def with_match_radius(self, match_radius: float) -> EndPoint.BorderedMatch:
 			...
-		def with_border(self, border: Marker) -> Triangle.BorderStartMatch:
-			...
-		...
-	class BorderMatch(object):
-		"""
-		Same as Triangle.Match except with an extra border around it
-		"""
-		def __init__(self, match_radius: float, border: Marker) -> None:
-			"""
-			Same as Triangle.Match except with an extra border around it
-			:param match_radius: radius of how big the match triangle is (as a percentage of segment length)
-			:param border: a Marker for the border
-			"""
-			...
-		@property
-		def match_radius(self) -> float:
-			"""
-			radius of how big the match triangle is (as a percentage of segment length)
-			"""
-			...
-		@property
-		def border(self) -> Marker:
-			"""
-			a Marker for the border
-			"""
-			...
-		def with_match_radius(self, match_radius: float) -> Triangle.BorderMatch:
-			...
-		def with_border(self, border: Marker) -> Triangle.BorderMatch:
+		def with_border(self, border: Marker) -> EndPoint.BorderedMatch:
 			...
 		...
 	class Match(object):
 		"""
-		Match the color of the line
+		Draw a point that matches the starting/ending color
 		"""
 		def __init__(self, radius: float) -> None:
 			"""
-			Match the color of the line
-			:param radius: radius is how big it is (as a percentage of segment length)
+			Draw a point that matches the starting/ending color
 			"""
 			...
 		@property
 		def radius(self) -> float:
-			"""
-			radius is how big it is (as a percentage of segment length)
-			"""
 			...
-		def with_radius(self, radius: float) -> Triangle.Match:
+		def with_radius(self, radius: float) -> EndPoint.Match:
 			...
 		...
-	class None_(object):
+	class Point(object):
 		"""
-		None, simply don't draw them
+		Draw a normal point
 		"""
-		def __init__(self) -> None:
+		def __init__(self, point: Point.AnyPoint) -> None:
 			"""
-			None, simply don't draw them
+			Draw a normal point
 			"""
+			...
+		@property
+		def point(self) -> Point.AnyPoint:
+			...
+		def with_point(self, point: Point.AnyPoint) -> EndPoint.Point:
 			...
 		...
 	...
-class PatternVariant(object):
+class Color(object):
 	"""
-	A hexpattern that can be rendered on a grid
+	RGBA Color Class
 	"""
-	def __init__(self, direction: str, angle_sigs: str, great_spell: None | bool = None) -> None:
+	def __init__(self, r: int, g: int, b: int, a: int) -> None:
 		"""
-		Creates a new PatternVariant
-		 :param direction: Starting direction (North_East, East, South_East, South_West, West, North_West)
-		 :param angle_sigs: String of angle sigs (accepted characters: [q,w,e,d,s,a])
-		 :param great_spell: Whether or not it's a great spell (Default = false)
+		RGBA Color Class
+		:param r: Red (0-255)
+		:param g: Green (0-255)
+		:param b: Blue (0-255)
+		:param a: Alpha (0-255)
 		"""
 		...
 	@property
-	def direction(self) -> str:
+	def r(self) -> int:
 		"""
-		Gets the starting direction of the pattern 
-		"""
-		...
-	@property
-	def angle_sigs(self) -> str:
-		"""
-		Gets the angle_sigs of the pattern
+		Red (0-255)
 		"""
 		...
 	@property
-	def great_spell(self) -> bool:
+	def g(self) -> int:
 		"""
-		Gets whether or not the pattern is a great spell
-		"""
-		...
-	...
-class AngleSig(object):
-	"""
-	Angle sigs of a pattern (ex. qqq)
-	"""
-	def __init__(self, sigs: str) -> None:
-		"""
-		Make a new angle sig
-		 :param sigs: String of sigs (ex. qqq)
+		Green (0-255)
 		"""
 		...
-	def get_sigs(self) -> str:
+	@property
+	def b(self) -> int:
 		"""
-		 gets the sigs as a string
+		Blue (0-255)
 		"""
 		...
-	def __repr__(self) -> str:
+	@property
+	def a(self) -> int:
+		"""
+		Alpha (0-255)
+		"""
+		...
+	def with_r(self, r: int) -> Color:
+		...
+	def with_g(self, g: int) -> Color:
+		...
+	def with_b(self, b: int) -> Color:
+		...
+	def with_a(self, a: int) -> Color:
 		...
 	...
 class OverloadOptions:
@@ -544,59 +533,70 @@ class Marker(object):
 	def with_radius(self, radius: float) -> Marker:
 		...
 	...
-class EndPoint:
+class GridPatternOptions:
 	"""
-	Specifier for how to draw the start and end points on a pattern
+	Struct that holds the different variations of GridPatterns
 	"""
-	AnyEndPoint = EndPoint.Point | EndPoint.Match | EndPoint.BorderedMatch
-	class BorderedMatch(object):
+	AnyGridPatternOptions = GridPatternOptions.Uniform | GridPatternOptions.Changing
+	class Changing(object):
 		"""
-		Draw a point that matches the starting/ending color with a border
+		Changes what pattern renderer to use when finding an introspect or retrospect pattern
+		 That way you can change colors/renderers for embedded patterns
 		"""
-		def __init__(self, match_radius: float, border: Marker) -> None:
+		def __init__(self, variations: list[tuple[Intersections.AnyIntersections, Lines.AnyLines]], intros: list[AngleSig], retros: list[AngleSig]) -> None:
 			"""
-			Draw a point that matches the starting/ending color with a border
+			Changes what pattern renderer to use when finding an introspect or retrospect pattern
+			 That way you can change colors/renderers for embedded patterns
+			:param variations: Variations to use, starts at the first and goes up when it reaches an intro, goes down when reaching a retro
+			:param intros: Vec of the angle_sigs of intro patterns
+			:param retros: Vec of angle_sigs of retro patterns
 			"""
 			...
 		@property
-		def match_radius(self) -> float:
+		def variations(self) -> list[tuple[Intersections.AnyIntersections, Lines.AnyLines]]:
+			"""
+			Variations to use, starts at the first and goes up when it reaches an intro, goes down when reaching a retro
+			"""
 			...
 		@property
-		def border(self) -> Marker:
+		def intros(self) -> list[AngleSig]:
+			"""
+			Vec of the angle_sigs of intro patterns
+			"""
 			...
-		def with_match_radius(self, match_radius: float) -> EndPoint.BorderedMatch:
+		@property
+		def retros(self) -> list[AngleSig]:
+			"""
+			Vec of angle_sigs of retro patterns
+			"""
 			...
-		def with_border(self, border: Marker) -> EndPoint.BorderedMatch:
+		def with_variations(self, variations: list[tuple[Intersections.AnyIntersections, Lines.AnyLines]]) -> GridPatternOptions.Changing:
+			...
+		def with_intros(self, intros: list[AngleSig]) -> GridPatternOptions.Changing:
+			...
+		def with_retros(self, retros: list[AngleSig]) -> GridPatternOptions.Changing:
 			...
 		...
-	class Match(object):
+	class Uniform(object):
 		"""
-		Draw a point that matches the starting/ending color
+		Uniform means that all patterns will be rendered in the same way
+		 (This excludes the difference with PatternVariant)
 		"""
-		def __init__(self, radius: float) -> None:
+		def __init__(self, intersections: Intersections.AnyIntersections, lines: Lines.AnyLines) -> None:
 			"""
-			Draw a point that matches the starting/ending color
-			"""
-			...
-		@property
-		def radius(self) -> float:
-			...
-		def with_radius(self, radius: float) -> EndPoint.Match:
-			...
-		...
-	class Point(object):
-		"""
-		Draw a normal point
-		"""
-		def __init__(self, point: Point.AnyPoint) -> None:
-			"""
-			Draw a normal point
+			Uniform means that all patterns will be rendered in the same way
+			 (This excludes the difference with PatternVariant)
 			"""
 			...
 		@property
-		def point(self) -> Point.AnyPoint:
+		def intersections(self) -> Intersections.AnyIntersections:
 			...
-		def with_point(self, point: Point.AnyPoint) -> EndPoint.Point:
+		@property
+		def lines(self) -> Lines.AnyLines:
+			...
+		def with_intersections(self, intersections: Intersections.AnyIntersections) -> GridPatternOptions.Uniform:
+			...
+		def with_lines(self, lines: Lines.AnyLines) -> GridPatternOptions.Uniform:
 			...
 		...
 	...
@@ -655,69 +655,6 @@ class Grid(object):
 		 :param bound: x and y maximum sizes
 		 :param options: The size of padding or the GridOptions to determine it automatically
 		"""
-		...
-	...
-class Point:
-	"""
-	Options for drawing points at the grid points/intersections
-	"""
-	AnyPoint = Point.None_ | Point.Single | Point.Double
-	class Double(object):
-		"""
-		Draws an inner dot dotand outer dot (or a point with a border)
-		"""
-		def __init__(self, inner: Marker, outer: Marker) -> None:
-			"""
-			Draws an inner dot dotand outer dot (or a point with a border)
-			:param inner: Marker specifying radius and color of the inner point
-			:param outer: Marker specifying radius and color of the outer point
-			"""
-			...
-		@property
-		def inner(self) -> Marker:
-			"""
-			Marker specifying radius and color of the inner point
-			"""
-			...
-		@property
-		def outer(self) -> Marker:
-			"""
-			Marker specifying radius and color of the outer point
-			"""
-			...
-		def with_inner(self, inner: Marker) -> Point.Double:
-			...
-		def with_outer(self, outer: Marker) -> Point.Double:
-			...
-		...
-	class Single(object):
-		"""
-		Draws a single dot
-		"""
-		def __init__(self, marker: Marker) -> None:
-			"""
-			Draws a single dot
-			:param marker: Marker specifying radius and color of point
-			"""
-			...
-		@property
-		def marker(self) -> Marker:
-			"""
-			Marker specifying radius and color of point
-			"""
-			...
-		def with_marker(self, marker: Marker) -> Point.Single:
-			...
-		...
-	class None_(object):
-		"""
-		Doesn't draw any points
-		"""
-		def __init__(self) -> None:
-			"""
-			Doesn't draw any points
-			"""
-			...
 		...
 	...
 class CollisionOption:
@@ -790,6 +727,69 @@ class CollisionOption:
 			"""
 			...
 		def with_color(self, color: Color) -> CollisionOption.Dashes:
+			...
+		...
+	...
+class Point:
+	"""
+	Options for drawing points at the grid points/intersections
+	"""
+	AnyPoint = Point.None_ | Point.Single | Point.Double
+	class Double(object):
+		"""
+		Draws an inner dot dotand outer dot (or a point with a border)
+		"""
+		def __init__(self, inner: Marker, outer: Marker) -> None:
+			"""
+			Draws an inner dot dotand outer dot (or a point with a border)
+			:param inner: Marker specifying radius and color of the inner point
+			:param outer: Marker specifying radius and color of the outer point
+			"""
+			...
+		@property
+		def inner(self) -> Marker:
+			"""
+			Marker specifying radius and color of the inner point
+			"""
+			...
+		@property
+		def outer(self) -> Marker:
+			"""
+			Marker specifying radius and color of the outer point
+			"""
+			...
+		def with_inner(self, inner: Marker) -> Point.Double:
+			...
+		def with_outer(self, outer: Marker) -> Point.Double:
+			...
+		...
+	class Single(object):
+		"""
+		Draws a single dot
+		"""
+		def __init__(self, marker: Marker) -> None:
+			"""
+			Draws a single dot
+			:param marker: Marker specifying radius and color of point
+			"""
+			...
+		@property
+		def marker(self) -> Marker:
+			"""
+			Marker specifying radius and color of point
+			"""
+			...
+		def with_marker(self, marker: Marker) -> Point.Single:
+			...
+		...
+	class None_(object):
+		"""
+		Doesn't draw any points
+		"""
+		def __init__(self) -> None:
+			"""
+			Doesn't draw any points
+			"""
 			...
 		...
 	...
