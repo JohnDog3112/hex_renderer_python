@@ -46,7 +46,8 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        target: [x64]
+        python-version: ['3.10', '3.11', '3.12']
+        target: [x64, x86]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -57,12 +58,12 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --interpreter python3.10 python3.11 python3.12 
+          args: --release --out dist --interpreter python${{ matrix.python-version }} 
           sccache: 'true'
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ runner.os }}${{ matrix.target }}
+          name: wheels-${{ runner.os }}-${{ matrix.target }}-${{ matrix.python-version }}
           path: dist
 
   macos:
