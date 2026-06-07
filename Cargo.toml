@@ -1,6 +1,6 @@
 [package]
 name = "hex_renderer_py"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 readme = "README.md"
 
@@ -10,7 +10,7 @@ name = "hex_renderer_py"
 crate-type = ["cdylib"]
 
 [dependencies]
-hex_renderer = "0.2.6"
+hex_renderer = "0.2.8"
 pyo3 = { version = "0.20.3", features = ["multiple-pymethods"] }
 interface_macros = {path = "./interface_macros"}
 
