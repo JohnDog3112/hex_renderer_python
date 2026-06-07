@@ -1,6 +1,6 @@
 [package]
 name = "hex_renderer_py"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 readme = "README.md"
 
