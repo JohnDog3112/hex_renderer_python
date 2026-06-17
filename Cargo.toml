@@ -10,7 +10,7 @@ name = "hex_renderer_py"
 crate-type = ["cdylib"]
 
 [dependencies]
-hex_renderer = "0.2.8"
+hex_renderer = "0.2.9"
 pyo3 = { version = "0.20.3", features = ["multiple-pymethods"] }
 interface_macros = {path = "./interface_macros"}
 
