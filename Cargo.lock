@@ -103,7 +103,7 @@ dependencies = [
 
 [[package]]
 name = "hex_renderer_py"
-version = "0.1.7"
+version = "0.1.9"
 dependencies = [
  "hex_renderer",
  "interface_macros",
