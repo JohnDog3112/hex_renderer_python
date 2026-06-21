@@ -160,6 +160,7 @@ jobs:
 
   release:
     name: Release
+    environment: CI
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
     needs: [linux, musllinux, windows, macos, sdist]
