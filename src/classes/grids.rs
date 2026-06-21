@@ -2,12 +2,12 @@ use std::fs;
 
 use hex_renderer::{grids::{GridDraw, GridDrawError, SquareGrid, HexGrid}, PatternVariant, options::GridOptions};
 use interface_macros::{py_type_gen, PyType, PyBridge};
-use pyo3::{pyclass, PyErr, exceptions::PyValueError, FromPyObject, PyRef, pymethods, PyResult, types::PyModule, Python};
+use pyo3::{Bound, FromPyObject, PyClassInitializer, PyErr, PyRef, PyResult, Python, exceptions::PyValueError, pyclass, pymethods, types::{PyModule, PyModuleMethods}};
 
 use super::{grid_options::PyGridOptions, pattern_variant::PyPatternVariant};
 
 
-pub fn initialize_classes(m: &PyModule) -> PyResult<()> {
+pub fn initialize_classes(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyGrid>()?;
     m.add_class::<PyHexGrid>()?;
     m.add_class::<PySquareGrid>()?;
@@ -19,7 +19,7 @@ pub fn initialize_classes(m: &PyModule) -> PyResult<()> {
 #[pyclass(name = "Grid", subclass)]
 ///Grid parent class for rendering grids
 /// Current grids implemented: HexGrid, SquareGrid
-struct PyGrid(Box<dyn GridDraw + Send>);
+struct PyGrid(Box<dyn GridDraw + Send + Sync>);
 
 fn map_draw_error(err: GridDrawError) -> PyErr {
     match err {
@@ -50,6 +50,7 @@ impl<'a> PyType for ScaleOption {
 #[py_type_gen]
 #[pymethods]
 impl PyGrid {
+    #[pyo3(signature = (scale, options, padding = None))]
     ///Draws the grid and returns a PNG as an array of bytes
     /// :param scale: (HexGrid) distance between points in pixels, (SquareGrid) size of tiles
     /// :param options: The options for how to draw the patterns
@@ -74,6 +75,7 @@ impl PyGrid {
             .map_err(|_| PyValueError::new_err("Failed to encode into png!"))
     }
 
+    #[pyo3(signature = (file_name, scale, options, padding = None))]
     ///Draws the grid and saves it to a file
     /// :param file_name: path to the file you want to save it as
     /// :param scale: (HexGrid) distance between points in pixels, (SquareGrid) size of tiles
@@ -123,13 +125,17 @@ impl PyHexGrid {
     ///Creates a hexagonal grid where patterns are all rendered to fit on the grid.
     /// :param patterns: Array of patterns to fit on to the grid
     /// :param max_width: The maximum width of the grid (in grid points) before wrapping around
-    fn new(patterns: Vec<PyPatternVariant>, max_width: usize) -> PyResult<(Self, PyGrid)> {
+    fn new(patterns: Vec<PyPatternVariant>, max_width: usize) -> PyResult<PyClassInitializer<Self>> {
         let patterns = patterns.into_iter().map(PatternVariant::from).collect();
 
         let grid = HexGrid::new(patterns, max_width)
             .map_err(|_| PyValueError::new_err("Failed to create grid!"))?;
 
-        Ok((Self, PyGrid(Box::new(grid))))
+        // Ok((Self, PyGrid(Box::new(grid))))
+        Ok(
+            PyClassInitializer::from(PyGrid(Box::new(grid)))
+                .add_subclass(Self)
+        )
     }
 }
 
@@ -154,12 +160,17 @@ impl PySquareGrid {
         max_scale: f32,
         x_pad: f32,
         y_pad: f32,
-    ) -> PyResult<(Self, PyGrid)> {
+    ) -> PyResult<PyClassInitializer<Self>> {
         let patterns = patterns.into_iter().map(PatternVariant::from).collect();
 
         let grid = SquareGrid::new(patterns, max_width, max_scale, x_pad, y_pad)
             .map_err(|_| PyValueError::new_err("Failed to create grid!"))?;
 
-        Ok((Self, PyGrid(Box::new(grid))))
+        // Ok((Self, PyGrid(Box::new(grid))))
+
+        Ok(
+            PyClassInitializer::from(PyGrid(Box::new(grid)))
+                .add_subclass(Self)
+        )
     }
 }

@@ -1,16 +1,16 @@
 use hex_renderer::options::{Color, Triangle, CollisionOption, Lines};
 use interface_macros::py_gen;
-use pyo3::{Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, types::{PyModule, PyModuleMethods}};
 
 use super::{color::PyColor, triangle::PyTriangle, collision_option::PyCollisionOption};
 
-pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
+pub fn add_class(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sub_m = PyModule::new(py, "Lines")?;
     sub_m.add_class::<PyLinesMonocolor>()?;
     sub_m.add_class::<PyLinesGradient>()?;
     sub_m.add_class::<PyLinesSegmentColors>()?;
     
-    m.add_submodule(sub_m)?;
+    m.add_submodule(&sub_m)?;
 
     Ok(())
 }

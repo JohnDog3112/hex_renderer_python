@@ -6,7 +6,7 @@ use crate::angles_to_string;
 
 #[derive(Debug, Clone)]
 #[py_type_gen]
-#[pyclass(name = "PatternVariant")]
+#[pyclass(name = "PatternVariant", from_py_object)]
 ///A hexpattern that can be rendered on a grid
 pub struct PyPatternVariant {
     dir_str: String,
@@ -19,6 +19,7 @@ pub struct PyPatternVariant {
 #[pymethods]
 impl PyPatternVariant {
     #[new]
+    #[pyo3(signature = (direction, angle_sigs, great_spell = None))]
     ///Creates a new PatternVariant
     /// :param direction: Starting direction (North_East, East, South_East, South_West, West, North_West)
     /// :param angle_sigs: String of angle sigs (accepted characters: [q,w,e,d,s,a])

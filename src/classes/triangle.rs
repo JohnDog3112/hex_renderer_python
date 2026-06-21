@@ -1,17 +1,17 @@
 use hex_renderer::options::{Triangle, Marker};
 use interface_macros::py_gen;
-use pyo3::{Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, types::{PyModule, PyModuleMethods}};
 
 use super::marker::PyMarker;
 
-pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
+pub fn add_class(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sub_m = PyModule::new(py, "Triangle")?;
     sub_m.add_class::<PyTriangleNone>()?;
     sub_m.add_class::<PyTriangleMatch>()?;
     sub_m.add_class::<PyTriangleBorderMatch>()?;
     sub_m.add_class::<PyTriangleBorderStartMatch>()?;
     
-    m.add_submodule(sub_m)?;
+    m.add_submodule(&sub_m)?;
 
     Ok(())
 }

@@ -1,10 +1,10 @@
 use hex_renderer::options::{GridPatternOptions, Point, GridOptions};
 use interface_macros::py_gen;
-use pyo3::{Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, types::{PyModule, PyModuleMethods}};
 
 use super::{grid_pattern_options::PyGridPatternOptions, point::PyPoint};
 
-pub fn add_class(_py: Python, m: &PyModule) -> PyResult<()> {
+pub fn add_class(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     
     m.add_class::<PyGridOptions>()?;
 

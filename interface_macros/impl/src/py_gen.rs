@@ -149,7 +149,7 @@ fn py_gen_struct(args: Arguments, input: ItemStruct) -> Result<TokenStream> {
     Ok(quote!{
         #attrs
         #[::interface_macros::py_type_gen]
-        #[::pyo3::pyclass(name = #name)]
+        #[::pyo3::pyclass(name = #name, from_py_object)]
         #vis struct #ident #fields #semi
 
         #[::interface_macros::py_type_gen]
@@ -203,7 +203,7 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
         Ok(quote! {
             #attrs
             #[::interface_macros::py_type_gen(nested = #module_ident)]
-            #[::pyo3::pyclass(name = #name)]
+            #[::pyo3::pyclass(name = #name, from_py_object)]
             #vis struct #ident #fields #semi
             
             #[::interface_macros::py_type_gen]
@@ -219,9 +219,10 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
         quote!(#ident(#variant_ident),)
     }).collect::<TokenStream>();
 
-    let into_py_match = input.variants.iter().zip(variant_idents.iter()).map(|(variant, variant_struct_ident)| {
+    let into_py_match = input.variants.iter().zip(variant_idents.iter()).map(|(variant, _variant_struct_ident)| {
         let variant_ident = &variant.ident;
-        quote!(#ident::#variant_ident(a) => <#variant_struct_ident as ::pyo3::IntoPy<::pyo3::Py<::pyo3::PyAny>>>::into_py(a, py),)
+        // quote!(#ident::#variant_ident(a) => <#variant_struct_ident as ::pyo3::IntoPy<::pyo3::Py<::pyo3::PyAny>>>::into_py(a, py),)
+        quote!(#ident::#variant_ident(a) => ::pyo3::IntoPyObject::into_pyobject(a, py).map(|o| o.into_any()),)
     }).collect::<TokenStream>();
 
     let bridge = args.bridge.clone().map(|bridge| {
@@ -351,8 +352,22 @@ fn py_gen_enum(args: Arguments, input: ItemEnum) -> Result<TokenStream> {
             #enum_fields
         }
 
-        impl ::pyo3::IntoPy<::pyo3::Py<::pyo3::PyAny>> for #ident {
-            fn into_py(self, py: ::pyo3::Python<'_>) -> ::pyo3::Py<::pyo3::PyAny> {
+        // impl ::pyo3::IntoPy<::pyo3::Py<::pyo3::PyAny>> for #ident {
+        //     fn into_py(self, py: ::pyo3::Python<'_>) -> ::pyo3::Py<::pyo3::PyAny> {
+        //         match self {
+        //             #into_py_match
+        //         }
+        //     }
+        // }
+        impl<'py> ::pyo3::IntoPyObject<'py> for #ident {
+            type Target = ::pyo3::PyAny;
+            type Output = ::pyo3::Bound<'py, ::pyo3::PyAny>;
+            type Error = ::pyo3::PyErr;
+
+            fn into_pyobject(
+                self,
+                py: ::pyo3::Python<'py>,
+            ) -> Result<Self::Output, Self::Error> {
                 match self {
                     #into_py_match
                 }

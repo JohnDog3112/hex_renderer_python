@@ -1,16 +1,16 @@
 use hex_renderer::options::{EndPoint, Point, Marker};
 use interface_macros::py_gen;
-use pyo3::{Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, types::{PyModule, PyModuleMethods}};
 
 use super::{point::PyPoint, marker::PyMarker};
 
-pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
+pub fn add_class(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sub_m = PyModule::new(py, "EndPoint")?;
     sub_m.add_class::<PyEndPointPoint>()?;
     sub_m.add_class::<PyEndPointMatch>()?;
     sub_m.add_class::<PyEndPointBorderedMatch>()?;
     
-    m.add_submodule(sub_m)?;
+    m.add_submodule(&sub_m)?;
 
     Ok(())
 }

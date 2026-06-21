@@ -1,10 +1,10 @@
 use hex_renderer::pattern_utils::Angle;
 
-use pyo3::{pymodule, Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, pymodule, types::{PyModule, PyModuleMethods}};
 
 pub mod classes;
 #[pymodule]
-fn hex_renderer_py(py: Python, m: &PyModule) -> PyResult<()> {
+fn hex_renderer_py(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     
     classes::color::add_class(py, m)?;
     classes::marker::add_class(py, m)?;

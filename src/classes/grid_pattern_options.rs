@@ -1,15 +1,15 @@
 use hex_renderer::{options::{GridPatternOptions, Intersections, Lines}, pattern_utils::Angle};
 use interface_macros::py_gen;
-use pyo3::{Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, types::{PyModule, PyModuleMethods}};
 
 use super::{intersections::PyIntersections, lines::PyLines, angle_sig::AngleSig};
 
-pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
+pub fn add_class(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sub_m = PyModule::new(py, "GridPatternOptions")?;
     sub_m.add_class::<PyGridPatternOptionsUniform>()?;
     sub_m.add_class::<PyGridPatternOptionsChanging>()?;
     
-    m.add_submodule(sub_m)?;
+    m.add_submodule(&sub_m)?;
 
     Ok(())
 }

@@ -263,6 +263,7 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
                    #module_name.to_string()
                 }
                 fn extend_string() -> String {
+                    #[allow(deprecated)]
                     <::pyo3::PyAny as ::interface_macros::PyType>::path_string()
                 }
             }
@@ -275,6 +276,7 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
                 const PATH: &'static [&'static str] = <#name as ::interface_macros::PyPath>::PATH;
     
                 fn to_string() -> String {
+                    #[allow(deprecated)]
                     <Self as ::pyo3::type_object::PyTypeInfo>::NAME.to_string()
                 }
                 fn extend_string() -> String {
@@ -317,6 +319,7 @@ fn type_struct(args: TypeArgs, input: ItemStruct) -> Result<TokenStream> {
 
         impl ::interface_macros::PyPath for #name {
             #py_path
+            #[allow(deprecated)]
             const NAME: &'static str = #py_path_name;
         }
 

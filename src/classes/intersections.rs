@@ -1,16 +1,16 @@
 use hex_renderer::options::{Point, Intersections, EndPoint};
 use interface_macros::py_gen;
-use pyo3::{Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, types::{PyModule, PyModuleMethods}};
 
 use super::{point::PyPoint, end_point::PyEndPoint};
 
-pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
+pub fn add_class(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sub_m = PyModule::new(py, "Intersections")?;
     sub_m.add_class::<PyIntersectionsNothing>()?;
     sub_m.add_class::<PyIntersectionsUniformPoints>()?;
     sub_m.add_class::<PyIntersectionsEndsAndMiddle>()?;
     
-    m.add_submodule(sub_m)?;
+    m.add_submodule(&sub_m)?;
 
     Ok(())
 }

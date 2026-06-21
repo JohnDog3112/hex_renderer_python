@@ -1,17 +1,17 @@
 use hex_renderer::options::{Color, OverloadOptions, CollisionOption};
 use interface_macros::py_gen;
-use pyo3::{Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, types::{PyModule, PyModuleMethods}};
 
 use super::{color::PyColor, overload_options::PyOverloadOptions};
 
-pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
+pub fn add_class(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sub_m = PyModule::new(py, "CollisionOption")?;
     sub_m.add_class::<PyCollisionOptionDashes>()?;
     sub_m.add_class::<PyCollisionOptionMatchedDashes>()?;
     sub_m.add_class::<PyCollisionOptionParallelLines>()?;
     sub_m.add_class::<PyCollisionOptionOverloadedParallel>()?;
     
-    m.add_submodule(sub_m)?;
+    m.add_submodule(&sub_m)?;
 
     Ok(())
 }

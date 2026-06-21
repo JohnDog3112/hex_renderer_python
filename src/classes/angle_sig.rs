@@ -3,7 +3,7 @@ use interface_macros::{py_type_gen, PyBridge};
 use pyo3::{pyclass, PyResult, exceptions::PyTypeError, Python, pymethods};
 
 #[py_type_gen]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 ///Angle sigs of a pattern (ex. qqq)
 pub struct AngleSig(Vec<Angle>);

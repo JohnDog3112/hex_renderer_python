@@ -1,16 +1,16 @@
 use hex_renderer::options::{Point, Marker};
 use interface_macros::py_gen;
-use pyo3::{Python, types::PyModule, PyResult};
+use pyo3::{Bound, PyResult, Python, types::{PyModule, PyModuleMethods}};
 
 use super::marker::PyMarker;
 
-pub fn add_class(py: Python, m: &PyModule) -> PyResult<()> {
+pub fn add_class(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sub_m = PyModule::new(py, "Point")?;
     sub_m.add_class::<PyPointNone>()?;
     sub_m.add_class::<PyPointSingle>()?;
     sub_m.add_class::<PyPointDouble>()?;
     
-    m.add_submodule(sub_m)?;
+    m.add_submodule(&sub_m)?;
 
     Ok(())
 }
